@@ -1,0 +1,32 @@
+{
+  "name": "@node-pigpio/devices",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "satoren <satoreyo@hotmail.com>",
+  "homepage": "https://github.com/satoren/node-pigpio#readme",
+  "license": "ISC",
+  "main": "dist/index.js",
+  "files": [
+    "index"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/satoren/node-pigpio.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "prepack": "rm -Rf ./dist && tsc",
+    "lint": "eslint \"src/**.ts\"",
+    "lint:fix": "eslint --fix \"src/**/*.ts\"",
+    "coverage": "jest --coverage"},
+  "bugs": {
+    "url": "https://github.com/satoren/node-pigpio/issues"
+  },
+  "dependencies": {
+    "@node-pigpio/highlevel": "^0.0.0"
+  }
+}

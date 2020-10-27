@@ -1,0 +1,38 @@
+{
+  "name": "@node-pigpio/highlevel",
+  "version": "0.0.0",
+  "description": "highlevel api pigpiod client for node.js",
+  "author": "satoren <satoreyo@hotmail.com>",
+  "homepage": "https://github.com/satoren/node-pigpio",
+  "license": "ISC",
+  "main": "dist/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/satoren/node-pigpio.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "prepack": "rm -Rf ./dist && tsc",
+    "lint": "eslint \"src/**.ts\"",
+    "lint:fix": "eslint --fix \"src/**/*.ts\"",
+    "coverage": "jest --coverage"
+  },
+  "bugs": {
+    "url": "https://github.com/satoren/node-pigpio/issues"
+  },
+  "dependencies": {
+    "@node-pigpio/core": "^0.2.0",
+    "@node-pigpio/util": "^0.0.0"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "node-pigpio-example",
+  "version": "1.0.0",
+  "description": "examples for node-pigpio",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "test": "",
+    "prepack": "rm -Rf ./dist && tsc",
+    "lint": "eslint \"src/**.ts\"",
+    "lint:fix": "eslint --fix \"src/**/*.ts\"",
+    "coverage": "jest --coverage"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@node-pigpio/highlevel": "^0.0.0",
+    "@node-pigpio/devices": "^0.0.0",
+    "@node-pigpio/util": "^0.0.0"
+  }
+}
