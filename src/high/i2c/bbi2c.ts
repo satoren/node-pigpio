@@ -1,15 +1,21 @@
-import { EventEmitter } from 'events'
+import { MonoTypedEventEmitter } from '../../utils/TypedEventEmitter'
 import { I2c, I2cZipCommand } from '../../types'
 import { buildZipCommand, ZipCommand } from './zipCommand'
 import { pigpio as llpigpio } from '../../lowlevel'
 
-class BBI2cImpl extends EventEmitter implements I2c {
+class BBI2cImpl implements I2c {
+    private device: number
+    private sda: number
+    private pi: llpigpio
+    readonly closeEvent = new MonoTypedEventEmitter<void>()
     constructor (
-        private device: number,
-        private sda: number,
-        private pi: llpigpio
+        device: number,
+        sda: number,
+        pi: llpigpio
     ) {
-        super()
+        this.device = device
+        this.sda = sda
+        this.pi = pi
     }
 
     async writeDevice (data: Buffer): Promise<void> {
@@ -40,15 +46,12 @@ class BBI2cImpl extends EventEmitter implements I2c {
     }
 
     async close (): Promise<void> {
-        const r = this.listeners('close').map((listener) => (listener as ()=> Promise<void> | void)())
-        const promises = r.filter(r => r instanceof Promise)
-        await Promise.all(promises)
+        await this.closeEvent.emit()
     }
 }
 
 class BBI2cIf {
     private pi: llpigpio
-    private closed?: ()=>void
     private instances: Set<BBI2cImpl> = new Set()
 
     constructor (
@@ -60,8 +63,7 @@ class BBI2cIf {
         this.pi = pi
     }
 
-    async open (closed?: ()=>void) {
-        this.closed = closed
+    async open () {
         const { sda, scl, baud } = this
         await this.pi.bb_i2c_open(sda, scl, baud)
     }
@@ -72,7 +74,7 @@ class BBI2cIf {
         const i2c = new BBI2cImpl(device, this.sda, this.pi)
         this.instances.add(i2c)
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        i2c.once('close', () => this.closedDevice(i2c))
+        i2c.closeEvent.once(() => this.closedDevice(i2c))
         return i2c
     }
 
@@ -84,8 +86,6 @@ class BBI2cIf {
     }
 
     async close (): Promise<void> {
-        this.closed?.()
-        this.closed = undefined
         const { sda } = this
         await this.pi.bb_i2c_close(sda)
     }
@@ -116,7 +116,7 @@ export class BBI2cFactory {
 
         const i2c = new BBI2cIf(sda, scl, baud, this.pi)
         this.instances.set(sda, i2c)
-        await i2c.open(() => { this.instances.delete(sda) })
+        await i2c.open()
         return i2c
     }
 

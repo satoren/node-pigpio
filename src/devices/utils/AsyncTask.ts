@@ -11,7 +11,7 @@ export class CanceledError extends Error {
     }
 }
 
-export class AsyncTask {
+export class AsyncTaskScheduler {
     private cancel?: CancelTrigger
     async start<T> (task: CancelableTask<T>): Promise<T> {
         this.cancel?.()

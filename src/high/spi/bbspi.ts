@@ -1,13 +1,17 @@
-import { EventEmitter } from 'events'
+import { MonoTypedEventEmitter } from '../../utils/TypedEventEmitter'
 import { pigpio as llpigpio } from '../../lowlevel'
 import { Spi } from '../../types'
 
-class SpiImpl extends EventEmitter implements Spi {
+class SpiImpl implements Spi {
+    private CS: number
+    private pi: llpigpio
+    readonly closeEvent = new MonoTypedEventEmitter<void>()
     constructor (
-        private CS: number,
-        private pi: llpigpio
+        CS: number,
+        pi: llpigpio
     ) {
-        super()
+        this.CS = CS
+        this.pi = pi
     }
 
     async open (
@@ -46,7 +50,7 @@ class SpiImpl extends EventEmitter implements Spi {
     async close (): Promise<void> {
         const { CS } = this
         await this.pi.bb_spi_close(CS)
-        this.emit('close')
+        await this.closeEvent.emit()
     }
 }
 
@@ -69,7 +73,7 @@ export class BBSpiFactory {
         const spi = new SpiImpl(cs, this.pi)
         this.instances.add(spi)
         await spi.open(miso, mosi, sclk, baudRate, flags)
-        spi.once('close', () => {
+        spi.closeEvent.once(() => {
             this.instances.delete(spi)
         })
         return spi

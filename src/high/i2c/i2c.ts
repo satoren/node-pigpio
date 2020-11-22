@@ -1,15 +1,17 @@
-import { EventEmitter } from 'events'
+import { MonoTypedEventEmitter } from '../../utils/TypedEventEmitter'
 import { I2c, I2cZipCommand } from '../../types'
 import { buildZipCommand, ZipCommand } from './zipCommand'
 import { pigpio as llpigpio } from '../../lowlevel'
 
-class I2cImpl extends EventEmitter implements I2c {
+class I2cImpl implements I2c {
     private handle?: number;
+    private pi: llpigpio
+    readonly closeEvent = new MonoTypedEventEmitter<void>()
 
     constructor (
-        private pi: llpigpio
+        pi: llpigpio
     ) {
-        super()
+        this.pi = pi
     }
 
     async open (bus: number, device: number, flags?: number) {
@@ -73,7 +75,7 @@ class I2cImpl extends EventEmitter implements I2c {
         }
         await this.pi.i2c_close(handle)
         this.handle = undefined
-        this.emit('close')
+        await this.closeEvent.emit()
     }
 }
 
@@ -93,13 +95,14 @@ export class I2cFactory {
         const i2c = new I2cImpl(this.pi)
         this.instances.add(i2c)
         await i2c.open(bus, addr, flags)
-        i2c.once('close', () => { this.instances.delete(i2c) })
+        i2c.closeEvent.once(() => { this.instances.delete(i2c) })
         return i2c
     }
 
     close = async (): Promise<void> => {
         const instances = [...this.instances.values()]
-        await Promise.all([...instances.map(v => v.close())])
+        const closes = instances.map(v => v.close())
+        await Promise.all(closes)
     }
 }
 export default { I2cFactory }

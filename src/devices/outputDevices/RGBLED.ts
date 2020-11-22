@@ -1,7 +1,7 @@
 import { Pigpio } from '../../index'
 import { LED } from './LED'
 import { PWMLED } from './PWMLED'
-import { AsyncTask, CancelableTask, Sleepable, CanceledError } from '../utils/AsyncTask'
+import { AsyncTaskScheduler, CancelableTask, Sleepable, CanceledError } from '../utils/AsyncTask'
 
 type Color = {r: number, g: number, b: number}
 
@@ -120,7 +120,7 @@ export const RGBLED = async (
         const color = await Promise.all(components.map((c) => c.getValue()))
         return { r: color[0], g: color[1], b: color[2] }
     }
-    const task = new AsyncTask()
+    const task = new AsyncTaskScheduler()
     const blink = async ({ onTime = 1000, offTime = 1000, fadeInTime = 0, fadeOutTime = 0, onColor = { r: 1, g: 1, b: 1 }, offColor = { r: 0, g: 0, b: 0 }, repeat = Infinity }: BlinkOption): Promise<void> => {
         const blinkTask: CancelableTask = Sleepable((sleep): CancelableTask => () => {
             let cancel: ()=> void

@@ -3,7 +3,7 @@ import { EventEmitter } from 'events'
 import { Pigpio } from '../../index'
 import { I2c, I2COption, BBI2COption } from '../../types'
 import pigpioFactory from '../pigpioFactory'
-import { AsyncTask, CancelableTask, Sleepable, CanceledError } from '../utils/AsyncTask'
+import { AsyncTaskScheduler, CancelableTask, Sleepable, CanceledError } from '../utils/AsyncTask'
 
 const defaultAddress = 0x5A
 
@@ -147,7 +147,7 @@ export const CCS811 = async (option? : Option): Promise<CCS811> => {
         return status & 1 << 0
     }
 
-    const task = new AsyncTask()
+    const task = new AsyncTaskScheduler()
     const start = (): Promise<void> => {
         const interval = measureInterval()
         const measureTask: CancelableTask = Sleepable((sleep): CancelableTask => () => {
