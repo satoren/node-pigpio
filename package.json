@@ -8,8 +8,8 @@
     "build": "tsc",
     "test": "jest",
     "prepare": "rm -Rf ./dist && tsc",
-    "lint": "eslint \"src/**.ts\" \"examples/**.ts\"",
-    "lint:fix": "eslint --fix \"src/**/*.ts\" \"examples/**/*.ts\"",
+    "lint": "eslint \"src/**.ts\"",
+    "lint:fix": "eslint --fix \"src/**/*.ts\"",
     "coverage": "jest --coverage"
   },
   "keywords": [
