@@ -1,6 +1,8 @@
 # node-pigpio-if
 pigpiod socket interface for node.js
 
+[![Coverage Status](https://coveralls.io/repos/github/satoren/node-pigpio/badge.svg?branch=main)](https://coveralls.io/github/satoren/node-pigpio?branch=main)
+
 ## Features
 * Can run gpio program on Windows/Mac/Linux with remote gpio by pigpiod
 * high level wrappers api for for I2C, SPI, Bit banging I2C
