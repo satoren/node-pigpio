@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/require-await */
 import { SpiFactory } from './spi'
-import RequestCommand from '../../socket/command/RequestCommands'
-import * as pigpio from '../../socket/pi'
+import RequestCommand from '../../lowlevel/command/RequestCommands'
+import * as pigpio from '../../lowlevel'
 
-import { mockRequestSocket as requestSocket } from '../../socket/__mocks__/RequestSocket'
+import { mockRequestSocket as requestSocket } from '../../lowlevel/__mocks__/RequestSocket'
 
-jest.mock('../../socket/RequestSocket', () => (
+jest.mock('../../lowlevel/RequestSocket', () => (
     { createRequestSocket: () => requestSocket }))
-jest.mock('../../socket/NotifySocket')
+jest.mock('../../lowlevel/NotifySocket')
 
 const channel = 3
 const baudrate = 100000

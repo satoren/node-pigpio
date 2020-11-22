@@ -1,4 +1,4 @@
-import { pi, pigpio as llpigpio, Event as PigpioEvent } from '../socket/pi'
+import { pi, pigpio as llpigpio, Event as PigpioEvent } from '../lowlevel'
 
 import {
     Gpio,

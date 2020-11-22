@@ -1,4 +1,4 @@
-import { pigpio as llpigpio, Event as PigpioCallback, EITHER_EDGE, RISING_EDGE, FALLING_EDGE } from '../socket/pi'
+import { pigpio as llpigpio, Event as PigpioCallback, EITHER_EDGE, RISING_EDGE, FALLING_EDGE } from '../lowlevel'
 
 import {
     Gpio,

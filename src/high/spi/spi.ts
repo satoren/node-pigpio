@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events'
 import { Spi } from '../../types'
-import { pigpio as llpigpio } from '../../socket/pi'
+import { pigpio as llpigpio } from '../../lowlevel'
 
 class SpiImpl extends EventEmitter implements Spi {
     private handle?: number;
