@@ -1,7 +1,7 @@
 import { Pigpio } from '../../index'
 import { LED } from './LED'
 import pigpioFactory from '../pigpioFactory'
-import { AsyncTask, CancelableTask, Sleepable, CanceledError } from '../utils/AsyncTask'
+import { AsyncTaskScheduler, CancelableTask, Sleepable, CanceledError } from '../utils/AsyncTask'
 
 interface BlinkOption {
     onTime?: number
@@ -85,7 +85,7 @@ export const PWMLED = async (pin: number, activeHigh = true, initialValue = 0, f
         const v = await getValue()
         await setValue(1 - v)
     }
-    const task = new AsyncTask()
+    const task = new AsyncTaskScheduler()
     const blink = async ({ onTime = 1000, offTime = 1000, fadeInTime = 0, fadeOutTime = 0, repeat = Infinity }: BlinkOption): Promise<void> => {
         const blinkTask: CancelableTask = Sleepable((sleep): CancelableTask => () => {
             let cancel: ()=> void

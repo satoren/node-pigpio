@@ -65,7 +65,7 @@ test('on falling edge', () => {
     func(2, 1, 3)
     expect(listener).toHaveBeenCalledTimes(1)
 })
-test('once  edge', () => {
+test('once edge', () => {
     const gpio = createGpio(2, pi)
 
     const listener = jest.fn()
@@ -78,6 +78,19 @@ test('once  edge', () => {
     const func = mockNotifySocket.append.mock.calls[0][0].func as (gpio: number, level: 0 | 1 | 'TIMEOUT', tick: number) => void
     func(2, 1, 3)
     expect(listener).toHaveBeenCalledTimes(1)
+    expect(mockNotifySocket.remove).toHaveBeenCalledTimes(1)
+})
+test('on/off notify edge', () => {
+    const gpio = createGpio(3, pi)
+
+    const listener = jest.fn()
+    gpio.on('edge', listener)
+    // invoke callback
+    const func = mockNotifySocket.append.mock.calls[0][0].func as (gpio: number, level: 0 | 1 | 'TIMEOUT', tick: number) => void
+    func(2, 1, 3)
+    expect(listener).toHaveBeenCalledTimes(1)
+
+    gpio.off('edge', listener)
     expect(mockNotifySocket.remove).toHaveBeenCalledTimes(1)
 })
 test('add/removeListener notify edge', () => {
@@ -116,6 +129,17 @@ test.each([
     const gpio = createGpio(3, pi)
     await gpio.setMode(mode)
     expect(mockRequestSocket.request).toBeCalledWith({ cmd: RequestCommand.MODES.cmdNo, p1: 3, p2: value, responseExtension: false })
+})
+
+test.each([
+    ['OUTPUT', 1],
+    ['INPUT', 0]
+] as const)('getMode', async (mode, value) => {
+    const gpio = createGpio(3, pi)
+    mockRequestSocket.request.mockResolvedValueOnce(({ cmd: RequestCommand.MODEG.cmdNo, p1: 3, p2: 0, res: value }))
+    const v = await gpio.getMode()
+    expect(mockRequestSocket.request).toBeCalledWith({ cmd: RequestCommand.MODEG.cmdNo, p1: 3, p2: 0, responseExtension: false })
+    expect(v).toBe(mode)
 })
 
 test.each([
@@ -195,5 +219,13 @@ test('getPWMRange', async () => {
     mockRequestSocket.request.mockResolvedValueOnce(({ cmd: RequestCommand.PRG.cmdNo, p1: 3, p2: 0, res: 333 }))
     const r = await gpio.getPWMRange()
     expect(mockRequestSocket.request).toBeCalledWith({ cmd: RequestCommand.PRG.cmdNo, p1: 3, p2: 0, responseExtension: false })
+    expect(r).toBe(333)
+})
+test('getPWMRealRange', async () => {
+    const gpio = createGpio(3, pi)
+
+    mockRequestSocket.request.mockResolvedValueOnce(({ cmd: RequestCommand.PRRG.cmdNo, p1: 3, p2: 0, res: 333 }))
+    const r = await gpio.getPWMRealRange()
+    expect(mockRequestSocket.request).toBeCalledWith({ cmd: RequestCommand.PRRG.cmdNo, p1: 3, p2: 0, responseExtension: false })
     expect(r).toBe(333)
 })

@@ -16,7 +16,7 @@ import {
 import { createGpio } from './gpio'
 import { I2cFactory, BBI2cFactory } from './i2c'
 import { SpiFactory, BBSpiFactory } from './spi'
-import { TypedEvent, MonoTypedEvent, MonoTypedEventEmitter } from '../utils/TypedEventEmitter'
+import { MonoTypedEventTarget, MonoTypedEventEmitter, TypedEventTarget } from '../utils/TypedEventEmitter'
 
 function isI2COption (option: unknown): option is I2COption {
     return (
@@ -29,10 +29,11 @@ function isSpiOption (option: unknown): option is SpiOption {
     )
 }
 
-class EventImple implements TypedEvent<{ [K in EventName]: GpioEvent} > {
+type EventListener = (args: GpioEvent) => void
+class EventImple implements TypedEventTarget<{ [K in EventName]: GpioEvent} > {
     private pi: llpigpio
     private events = new Map<(args: GpioEvent) => void, Map<number, PigpioEvent>>()
-    private put (eventno: number, listener: (args: GpioEvent) => void, event: PigpioEvent) {
+    private put (eventno: number, listener: EventListener, event: PigpioEvent) {
         const l = this.events.get(listener)
         if (l) {
             l.set(eventno, event)
@@ -41,11 +42,11 @@ class EventImple implements TypedEvent<{ [K in EventName]: GpioEvent} > {
         }
     }
 
-    private get (eventno: number, listener: (args: GpioEvent) => void): PigpioEvent | undefined {
+    private get (eventno: number, listener: EventListener): PigpioEvent | undefined {
         return this.events.get(listener)?.get(eventno)
     }
 
-    private delete (eventno: number, listener: (args: GpioEvent) => void): void {
+    private delete (eventno: number, listener: EventListener): void {
         this.events.get(listener)?.delete(eventno)
     }
 
@@ -152,12 +153,16 @@ class PigpioImpl implements Pigpio {
         ))
     }
 
-    async getCurrentTick (): Promise<number> {
-        return await this.pi.get_current_tick()
+    getCurrentTick (): Promise<number> {
+        return this.pi.get_current_tick()
     }
 
-    async getHardwareRevision (): Promise<number> {
-        return await this.pi.get_hardware_revision()
+    getHardwareRevision (): Promise<number> {
+        return this.pi.get_hardware_revision()
+    }
+
+    getPigpioVersion (): Promise<number> {
+        return this.pi.get_pigpio_version()
     }
 
     async eventTrigger (eventName: EventName): Promise<void> {
@@ -180,7 +185,7 @@ class PigpioImpl implements Pigpio {
         await this.closeEvent.emit()
     }
 
-    autoCloseWrap<T extends {closeEvent: MonoTypedEvent<void>}> (c: T): T {
+    autoCloseWrap<T extends {closeEvent: MonoTypedEventTarget<void>}> (c: T): T {
         if (this.autoClose && !this.isClosed) {
             this.users.add(c)
             c.closeEvent.once(async () => {

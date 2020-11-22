@@ -1,4 +1,4 @@
-import { TypedEvent, MonoTypedEvent } from './utils/TypedEventEmitter'
+import { TypedEventTarget, MonoTypedEventTarget } from './utils/TypedEventEmitter'
 
 export const GpioNameTuple = [
     'GPIO0',
@@ -105,7 +105,7 @@ export interface GpioEvent {
 export type GpioEventArgsType = { edge: GpioEdgeEvent; fallingEdge: GpioEdgeEvent; risingEdge: GpioEdgeEvent;}
 export type GpioEventNameType = keyof GpioEventArgsType
 
-export interface Gpio extends TypedEvent<GpioEventArgsType> {
+export interface Gpio extends TypedEventTarget<GpioEventArgsType> {
     setServoPulsewidth(pulsewidth: number): Promise<void>;
     getServoPulsewidth(): Promise<number>;
 
@@ -126,7 +126,7 @@ export interface Gpio extends TypedEvent<GpioEventArgsType> {
     read(): Promise<0 | 1>;
 
     close(): Promise<void>;
-    readonly closeEvent:MonoTypedEvent<void>
+    readonly closeEvent:MonoTypedEventTarget<void>
 
     readonly pin: number;
 }
@@ -140,7 +140,7 @@ export interface I2c {
     readDevice(count: number): Promise<Buffer>;
     zip(...commands: I2cZipCommand[]): Promise<Buffer[]>;
     close(): Promise<void>;
-    readonly closeEvent:MonoTypedEvent<void>
+    readonly closeEvent:MonoTypedEventTarget<void>
 }
 
 /** Open with hardware I2C. */
@@ -160,7 +160,7 @@ export interface Spi {
     readDevice(count: number): Promise<Buffer>;
     xferDevice(data: Buffer): Promise<Buffer | undefined>;
     close(): Promise<void>;
-    readonly closeEvent:MonoTypedEvent<void>
+    readonly closeEvent:MonoTypedEventTarget<void>
 }
 
 /** Open with hardware SPI. */
@@ -186,10 +186,11 @@ export interface Pigpio {
     spi(option: SpiOption | BBSpiOption): Promise<Spi>;
     close(): Promise<void>;
 
-    readonly event: TypedEvent<{ [K in EventName]: GpioEvent} >
-    readonly closeEvent:MonoTypedEvent<void>
+    readonly event: TypedEventTarget<{ [K in EventName]: GpioEvent} >
+    readonly closeEvent:MonoTypedEventTarget<void>
 
     getCurrentTick(): Promise<number>;
     getHardwareRevision(): Promise<number>;
+    getPigpioVersion(): Promise<number>;
     eventTrigger(event: EventName): Promise<void>;
 }

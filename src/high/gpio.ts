@@ -32,7 +32,16 @@ class Callbacks {
     }
 }
 
-type EventHandlerType<E extends keyof GpioEventArgsType> = (args:GpioEventArgsType[E]) => void
+function edgeValue (n: 'edge' | 'risingEdge' | 'fallingEdge') {
+    switch (n) {
+        case 'edge':
+            return EITHER_EDGE
+        case 'risingEdge':
+            return RISING_EDGE
+        case 'fallingEdge':
+            return FALLING_EDGE
+    }
+}
 
 class GpioImpl implements Gpio {
     private callbacks = new Callbacks()
@@ -48,17 +57,7 @@ class GpioImpl implements Gpio {
     }
 
     addListener<E extends 'edge' | 'risingEdge' | 'fallingEdge' > (event: E, listener: (args: GpioEventArgsType[E]) => void): this {
-        switch (event) {
-            case 'edge':
-                this.appendCallback(EITHER_EDGE, listener as EventHandlerType<'edge'>)
-                return this
-            case 'risingEdge':
-                this.appendCallback(RISING_EDGE, listener as EventHandlerType<'risingEdge'>)
-                return this
-            case 'fallingEdge':
-                this.appendCallback(FALLING_EDGE, listener as EventHandlerType<'fallingEdge'>)
-                return this
-        }
+        this.appendCallback(event, listener)
         return this
     }
 
@@ -67,32 +66,12 @@ class GpioImpl implements Gpio {
     }
 
     once<E extends 'edge' | 'risingEdge' | 'fallingEdge'> (event: E, listener: (args: GpioEventArgsType[E]) => void): this {
-        switch (event) {
-            case 'edge':
-                this.appendCallback(EITHER_EDGE, listener as EventHandlerType<'edge'>, true)
-                return this
-            case 'risingEdge':
-                this.appendCallback(RISING_EDGE, listener as EventHandlerType<'risingEdge'>, true)
-                return this
-            case 'fallingEdge':
-                this.appendCallback(FALLING_EDGE, listener as EventHandlerType<'fallingEdge'>, true)
-                return this
-        }
+        this.appendCallback(event, listener, true)
         return this
     }
 
     removeListener<E extends 'edge' | 'risingEdge' | 'fallingEdge'> (event: E, listener: (args: GpioEventArgsType[E]) => void): this {
-        switch (event) {
-            case 'edge':
-                this.removeCallback(EITHER_EDGE, listener as EventHandlerType<'edge'>)
-                return this
-            case 'risingEdge':
-                this.removeCallback(RISING_EDGE, listener as EventHandlerType<'risingEdge'>)
-                return this
-            case 'fallingEdge':
-                this.removeCallback(FALLING_EDGE, listener as EventHandlerType<'fallingEdge'>)
-                return this
-        }
+        this.removeCallback(event, listener)
         return this
     }
 
@@ -100,18 +79,20 @@ class GpioImpl implements Gpio {
         return this.removeListener(event, listener)
     }
 
-    appendCallback (edge:0 | 1 | 2, listener: (args: GpioEdgeEvent) => void, once = false) {
-        const c = this.pi.callback(this.gpio, edge, (_, level, tick) : void => {
+    appendCallback (edge:'edge' | 'risingEdge' | 'fallingEdge', listener: (args: GpioEdgeEvent) => void, once = false) {
+        const v = edgeValue(edge)
+        const c = this.pi.callback(this.gpio, v, (_, level, tick) : void => {
             listener({ level, tick })
             if (once) { this.removeCallback(edge, listener) }
         })
-        this.callbacks.put(edge, listener, c)
+        this.callbacks.put(v, listener, c)
     }
 
-    removeCallback (edge:0 | 1 | 2, listener: (args: GpioEdgeEvent) => void) {
-        const c = this.callbacks.get(edge, listener)
+    removeCallback (edge:'edge' | 'risingEdge' | 'fallingEdge', listener: (args: GpioEdgeEvent) => void) {
+        const v = edgeValue(edge)
+        const c = this.callbacks.get(v, listener)
         c?.cancel()
-        this.callbacks.delete(edge, listener)
+        this.callbacks.delete(v, listener)
     }
 
     async setServoPulsewidth (pulsewidth: number): Promise<void> {

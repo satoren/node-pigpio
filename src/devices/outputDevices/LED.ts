@@ -1,7 +1,7 @@
 
 import { Pigpio } from '../../index'
 import pigpioFactory from '../pigpioFactory'
-import { AsyncTask, CancelableTask, Sleepable, CanceledError } from '../utils/AsyncTask'
+import { AsyncTaskScheduler, CancelableTask, Sleepable, CanceledError } from '../utils/AsyncTask'
 
 interface BlinkOption {
     onTime?: number
@@ -43,7 +43,7 @@ export const LED = async (pin: number, activeHigh = true, initialValue = false, 
         }
     }
 
-    const task = new AsyncTask()
+    const task = new AsyncTaskScheduler()
 
     const blink = async ({ onTime = 1000, offTime = 1000, repeat = Infinity }: BlinkOption): Promise<void> => {
         const blinkTask: CancelableTask = Sleepable((sleep): CancelableTask => () => {
