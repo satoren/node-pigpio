@@ -1,7 +1,7 @@
 import RequestCommandsOnPage from './RequestCommands'
 import ResponseCommandsOnPage from './ResponseCommands'
 
-import { RequestParam } from '../RequestSocket'
+import { RequestParam } from '../Request'
 
 // Currently not available in http://abyz.me.uk/rpi/pigpio/sif.html
 const RequestCommands = {

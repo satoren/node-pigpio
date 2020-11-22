@@ -2,7 +2,8 @@
 import net from 'net'
 import { EventEmitter, once } from 'events'
 import { createRequestParam } from './command/Commands'
-import { RequestSocket, requestFactory } from './RequestSocket'
+import { RequestSocket } from './RequestSocket'
+import { requestFactory } from './Request'
 
 interface Notify {
     ///  starts at 0 each time the handle is opened and then increments by one for each report.
@@ -41,6 +42,7 @@ const notifySize = 12
 
 export interface EventCallback{
     event: number,
+    bit: number,
     func:(event: number, tick: number) => void
 }
 export interface EdgeCallback{
@@ -116,7 +118,7 @@ class SocketImpl extends EventEmitter implements NotifySocket {
         for (const cb of this.callbacks.values()) {
             if (cb.bit & changed) {
                 const newLevel = (cb.bit & notify.level) ? 1 : 0
-                if (newLevel & cb.edge) {
+                if (newLevel ^ cb.edge) {
                     cb.func(cb.gpio, newLevel, notify.tick)
                 }
             }
@@ -158,7 +160,7 @@ class SocketImpl extends EventEmitter implements NotifySocket {
         const { handle } = this
         if (handle == null) { return }
         this.events.add(e)
-        this.eventBits = this.eventBits | e.event
+        this.eventBits = this.eventBits | e.bit
         const bits = this.eventBits
         void this.control.request(createRequestParam({ command: 'EVM', bits, handle }))
     }
@@ -167,7 +169,7 @@ class SocketImpl extends EventEmitter implements NotifySocket {
         const { handle } = this
         if (handle == null) { return }
         this.events.delete(e)
-        this.eventBits = Array(...this.events.values()).reduce((prev, cur) => prev | cur.event, 0)
+        this.eventBits = Array(...this.events.values()).reduce((prev, cur) => prev | cur.bit, 0)
         const bits = this.eventBits
         void this.control.request(createRequestParam({ command: 'EVM', bits, handle }))
     }

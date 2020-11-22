@@ -9,7 +9,8 @@
 
 import { createRequestParam } from './command/Commands'
 import { createNotifySocket } from './NotifySocket'
-import { createRequestSocket, RequestParam } from './RequestSocket'
+import { RequestParam } from './Request'
+import { createRequestSocket } from './RequestSocket'
 
 export let exceptions = false
 exceptions = true
@@ -933,9 +934,17 @@ export function error_text (errnum: number): string {
         [PI_NOT_ON_BCM2711]: 'not available on BCM2711',
         [PI_ONLY_ON_BCM2711]: 'only available on BCM2711'
     }
-    return errorMessages[errnum]
+    return errorMessages[errnum] ?? `unknown error (${errnum}))`
 }
 
+/**
+ * Returns the microsecond difference between two ticks.
+ * @param t1 - the earlier tick
+ * @param t2 - the later tick
+ * ```ts
+ * console.log(tickDiff(4294967272, 12)) // 36
+ * ```
+ */
 export function tickDiff (t1: number, t2: number): number {
     let tDiff = t2 - t1
     if (tDiff < 0) {
@@ -1264,7 +1273,8 @@ export async function pi (host?: string, port?: number): Promise<pigpio> {
             const f = func ?? (() => { count += 1 })
 
             const ev = {
-                event: 1 << event,
+                event,
+                bit: 1 << event,
                 func: f
             }
             notifySocket.appendEvent(ev)
