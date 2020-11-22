@@ -1,12 +1,12 @@
 import { I2cFactory } from './i2c'
 
-import RequestCommand from '../../socket/command/RequestCommands'
-import { mockRequestSocket as requestSocket } from '../../socket/__mocks__/RequestSocket'
-import * as pigpio from '../../socket/pi'
+import RequestCommand from '../../lowlevel/command/RequestCommands'
+import { mockRequestSocket as requestSocket } from '../../lowlevel/__mocks__/RequestSocket'
+import * as pigpio from '../../lowlevel'
 
-jest.mock('../../socket/RequestSocket', () => (
+jest.mock('../../lowlevel/RequestSocket', () => (
     { createRequestSocket: () => requestSocket }))
-jest.mock('../../socket/NotifySocket')
+jest.mock('../../lowlevel/NotifySocket')
 
 const bus = 1
 const address = 0x73

@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/require-await */
 import { BBI2cFactory } from './bbi2c'
 
-import RequestCommand from '../../socket/command/RequestCommands'
+import RequestCommand from '../../lowlevel/command/RequestCommands'
 
-import { mockRequestSocket as requestSocket } from '../../socket/__mocks__/RequestSocket'
-import * as pigpio from '../../socket/pi'
+import { mockRequestSocket as requestSocket } from '../../lowlevel/__mocks__/RequestSocket'
+import * as pigpio from '../../lowlevel'
 
-jest.mock('../../socket/RequestSocket', () => (
+jest.mock('../../lowlevel/RequestSocket', () => (
     { createRequestSocket: () => requestSocket }))
-jest.mock('../../socket/NotifySocket')
+jest.mock('../../lowlevel/NotifySocket')
 
 const device = 0x11
 const sda = 17

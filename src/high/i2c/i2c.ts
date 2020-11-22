@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events'
 import { I2c, I2cZipCommand } from '../../types'
 import { buildZipCommand, ZipCommand } from './zipCommand'
-import { pigpio as llpigpio } from '../../socket/pi'
+import { pigpio as llpigpio } from '../../lowlevel'
 
 class I2cImpl extends EventEmitter implements I2c {
     private handle?: number;

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { createGpio } from './gpio'
 
-import RequestCommand from '../socket/command/RequestCommands'
-import * as pigpio from '../socket/pi'
+import RequestCommand from '../lowlevel/command/RequestCommands'
+import * as pigpio from '../lowlevel'
 
 const mockRequestSocket = {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -16,10 +16,10 @@ const mockNotifySocket = {
     remove: jest.fn(),
     close: jest.fn()
 }
-jest.mock('../socket/RequestSocket', () => ({
+jest.mock('../lowlevel/RequestSocket', () => ({
     createRequestSocket: () => mockRequestSocket
 }))
-jest.mock('../socket/NotifySocket', () => ({
+jest.mock('../lowlevel/NotifySocket', () => ({
     createNotifySocket: () => mockNotifySocket
 }))
 

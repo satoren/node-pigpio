@@ -50,7 +50,7 @@
   "exports": {
     ".": "./dist/index.js",
     "./devices": "./dist/index.js",
-    "./lowlevel": "./dist/socket/pi.js"
+    "./lowlevel": "./dist/lowlevel/pi.js"
   },
   "repository": {
     "type": "git",

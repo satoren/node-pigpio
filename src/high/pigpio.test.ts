@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { pigpio } from './pigpio'
 import { EventEmitter } from 'events'
-import RequestCommand from '../socket/command/RequestCommands'
+import RequestCommand from '../lowlevel/command/RequestCommands'
 
 const mockConnect = jest.fn()
 const setNoDelay = jest.fn()

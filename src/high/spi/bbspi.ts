@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events'
-import { pigpio as llpigpio } from '../../socket/pi'
+import { pigpio as llpigpio } from '../../lowlevel'
 import { Spi } from '../../types'
 
 class SpiImpl extends EventEmitter implements Spi {
