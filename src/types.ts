@@ -1,4 +1,4 @@
-import { TypedEvent } from './utils/TypedEventEmitter'
+import { TypedEvent, MonoTypedEvent } from './utils/TypedEventEmitter'
 
 export const GpioNameTuple = [
     'GPIO0',
@@ -102,7 +102,7 @@ export interface GpioEvent {
     tick: number;
 }
 
-export type GpioEventArgsType = { edge: GpioEdgeEvent; fallingEdge: GpioEdgeEvent; risingEdge: GpioEdgeEvent; close: void }
+export type GpioEventArgsType = { edge: GpioEdgeEvent; fallingEdge: GpioEdgeEvent; risingEdge: GpioEdgeEvent;}
 export type GpioEventNameType = keyof GpioEventArgsType
 
 export interface Gpio extends TypedEvent<GpioEventArgsType> {
@@ -125,7 +125,8 @@ export interface Gpio extends TypedEvent<GpioEventArgsType> {
     write(level: 0 | 1): Promise<void>;
     read(): Promise<0 | 1>;
 
-    close(): void;
+    close(): Promise<void>;
+    readonly closeEvent:MonoTypedEvent<void>
 
     readonly pin: number;
 }
@@ -134,11 +135,12 @@ export type I2cZipCommand =
   | { type: 'Write'; data: Buffer }
   | { type: 'Read'; size: number };
 
-export interface I2c extends TypedEvent<{ 'close': void}> {
+export interface I2c {
     writeDevice(data: Buffer): Promise<void>;
     readDevice(count: number): Promise<Buffer>;
     zip(...commands: I2cZipCommand[]): Promise<Buffer[]>;
     close(): Promise<void>;
+    readonly closeEvent:MonoTypedEvent<void>
 }
 
 /** Open with hardware I2C. */
@@ -153,11 +155,12 @@ export type BBI2COption = {
 };
 
 // a
-export interface Spi extends TypedEvent<{ 'close': void}>{
+export interface Spi {
     writeDevice(data: Buffer): Promise<void>;
     readDevice(count: number): Promise<Buffer>;
     xferDevice(data: Buffer): Promise<Buffer | undefined>;
     close(): Promise<void>;
+    readonly closeEvent:MonoTypedEvent<void>
 }
 
 /** Open with hardware SPI. */
@@ -177,12 +180,14 @@ export type BBSpiOption = {
     flags?: number;
 };
 
-export interface Pigpio extends TypedEvent<{ [K in EventName]: GpioEvent} >{
+export interface Pigpio {
     gpio(no: number): Gpio;
     i2c(option: I2COption | BBI2COption): Promise<I2c>;
     spi(option: SpiOption | BBSpiOption): Promise<Spi>;
     close(): Promise<void>;
-    readonly closed: boolean;
+
+    readonly event: TypedEvent<{ [K in EventName]: GpioEvent} >
+    readonly closeEvent:MonoTypedEvent<void>
 
     getCurrentTick(): Promise<number>;
     getHardwareRevision(): Promise<number>;

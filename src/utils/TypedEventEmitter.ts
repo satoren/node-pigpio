@@ -10,7 +10,7 @@ export interface TypedEventEmitter<T extends EventTypeMapper> {
     removeListener<E extends keyof T>(event: E, listener: (args: T[E]) => void): this;
     off<E extends keyof T>(event: E, listener: (args: T[E]) => void): this;
     removeAllListeners<E extends keyof T>(event?: E): this;
-    setMaxListeners<E extends keyof T>(n: number): this;
+    setMaxListeners(n: number): this;
     getMaxListeners(): number;
     listeners<E extends keyof T>(event: E): ((args: T[E]) => void)[];
     rawListeners<E extends keyof T>(event: E): ((args: T[E]) => void)[];
@@ -31,8 +31,14 @@ export interface TypedEvent<T extends EventTypeMapper> {
 }
 
 export interface MonoTypedEventListener<T> {
-    (event: T): void;
+    (event: T): Promise<void> | void;
 }
+export interface MonoTypedEvent<T> {
+    on: (listener: MonoTypedEventListener<T>)=> void
+    once : (listener: MonoTypedEventListener<T>)=> void
+    off :(listener: MonoTypedEventListener<T>)=> void
+}
+
 export class MonoTypedEventEmitter<T> {
     private listeners: MonoTypedEventListener<T>[] = [];
     private listenersOncer: MonoTypedEventListener<T>[] = [];
@@ -50,11 +56,10 @@ export class MonoTypedEventEmitter<T> {
         if (callbackIndex > -1) this.listeners.splice(callbackIndex, 1)
     }
 
-    emit = (event: T): void => {
-        this.listeners.forEach((listener) => listener(event))
-
-        this.listenersOncer.forEach((listener) => listener(event))
+    emit = async (event: T): Promise<void> => {
+        const emitted = [...this.listeners.map((listener) => listener(event)), ...this.listenersOncer.map((listener) => listener(event))]
         this.listenersOncer = []
+        await Promise.all(emitted)
     }
 }
 

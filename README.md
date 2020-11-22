@@ -36,14 +36,14 @@ import usingAsync = devices.utils.usingAsync
 
 ```
 
-### with lowlevel api
+### lowlevel api
 lowlevel API is the same feature as the original [python library](http://abyz.me.uk/rpi/pigpio/python.html) except that all requests are asynchronous.
 ```ts
 import { lowlevel as pigpio } from 'node-pigpio-if'
 (async ()={
-    pi1 = await pigpio.pi()       // pi1 accesses the local Pi's GPIO
-    pi2 = await pigpio.pi('tom')  // pi2 accesses tom's GPIO
-    pi3 = await pigpio.pi('dick') // pi3 accesses dick's GPIO
+    const pi1 = await pigpio.pi()       // pi1 accesses the local Pi's GPIO
+    const pi2 = await pigpio.pi('tom')  // pi2 accesses tom's GPIO
+    const pi3 = await pigpio.pi('dick') // pi3 accesses dick's GPIO
 
     await pi1.write(4, 0) // set local Pi's GPIO 4 low
     await pi2.write(4, 1) // set tom's GPIO 4 to high

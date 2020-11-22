@@ -981,8 +981,8 @@ export async function pi (host?: string, port?: number): Promise<pigpio> {
     }
     class PiImpl implements pigpio {
         async stop (): Promise<void> {
-            await reqSocket.close()
             await notifySocket.close()
+            await reqSocket.close()
         }
 
         set_mode (gpio: number, mode: number): Promise<number> {

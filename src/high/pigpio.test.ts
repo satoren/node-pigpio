@@ -91,3 +91,16 @@ test('bbi2c close', async () => {
 
     expect(mockWrite).toBeCalledWith(Buffer.of(RequestCommand.BI2CC.cmdNo, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
 })
+
+test('auto close by i2c', async () => {
+    const pig = await pigpio('test', 333, true)
+
+    const i2c = await pig.i2c({ bus: 1, address: 21 })
+    mockWrite.mockClear()
+    const closed = new Promise<boolean>((resolve) => {
+        pig.closeEvent.once(async () => resolve(true))
+    })
+    await i2c.close()
+    const c = await closed
+    expect(c).toBe(true)
+})

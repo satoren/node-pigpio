@@ -16,7 +16,7 @@ import {
 import { createGpio } from './gpio'
 import { I2cFactory, BBI2cFactory } from './i2c'
 import { SpiFactory, BBSpiFactory } from './spi'
-import { TypedEvent } from '../utils/TypedEventEmitter'
+import { TypedEvent, MonoTypedEvent, MonoTypedEventEmitter } from '../utils/TypedEventEmitter'
 
 function isI2COption (option: unknown): option is I2COption {
     return (
@@ -29,9 +29,10 @@ function isSpiOption (option: unknown): option is SpiOption {
     )
 }
 
-class Events {
+class EventImple implements TypedEvent<{ [K in EventName]: GpioEvent} > {
+    private pi: llpigpio
     private events = new Map<(args: GpioEvent) => void, Map<number, PigpioEvent>>()
-    put (eventno: number, listener: (args: GpioEvent) => void, event: PigpioEvent) {
+    private put (eventno: number, listener: (args: GpioEvent) => void, event: PigpioEvent) {
         const l = this.events.get(listener)
         if (l) {
             l.set(eventno, event)
@@ -40,35 +41,16 @@ class Events {
         }
     }
 
-    get (eventno: number, listener: (args: GpioEvent) => void): PigpioEvent | undefined {
+    private get (eventno: number, listener: (args: GpioEvent) => void): PigpioEvent | undefined {
         return this.events.get(listener)?.get(eventno)
     }
 
-    delete (eventno: number, listener: (args: GpioEvent) => void): void {
+    private delete (eventno: number, listener: (args: GpioEvent) => void): void {
         this.events.get(listener)?.delete(eventno)
     }
-}
 
-class PigpioImpl implements Pigpio {
-    private pi: llpigpio
-    private spiFactory: SpiFactory
-    private i2cFactory: I2cFactory
-    private bbSpiFactory: BBSpiFactory
-    private bbI2cFactory: BBI2cFactory
-    private autoClose: boolean
-    private users = new Set<unknown>()
-    private isClosed = false
-    private events = new Events()
-    constructor (
-        pi: llpigpio,
-        autoClose: boolean
-    ) {
+    constructor (pi: llpigpio) {
         this.pi = pi
-        this.spiFactory = new SpiFactory(pi)
-        this.i2cFactory = new I2cFactory(pi)
-        this.bbSpiFactory = new BBSpiFactory(pi)
-        this.bbI2cFactory = new BBI2cFactory(pi)
-        this.autoClose = autoClose
     }
 
     addListener (event: EventName, listener: (args: GpioEvent) => void): this {
@@ -76,7 +58,7 @@ class PigpioImpl implements Pigpio {
         const e = this.pi.event_callback(ev, (_, tick) => {
             listener({ tick })
         })
-        this.events.put(ev, listener, e)
+        this.put(ev, listener, e)
         return this
     }
 
@@ -89,22 +71,47 @@ class PigpioImpl implements Pigpio {
         const e = this.pi.event_callback(ev, (_, tick) => {
             listener({ tick })
             e.cancel()
-            this.events.delete(ev, listener)
+            this.delete(ev, listener)
         })
-        this.events.put(ev, listener, e)
+        this.put(ev, listener, e)
         return this
     }
 
     removeListener (event: EventName, listener: (args: GpioEvent) => void): this {
         const ev = EventNameTuple.findIndex((n) => n === event)
-        const e = this.events.get(ev, listener)
+        const e = this.get(ev, listener)
         e?.cancel()
-        this.events.delete(ev, listener)
+        this.delete(ev, listener)
         return this
     }
 
     off (event: EventName, listener: (args: GpioEvent) => void): this {
         return this.removeListener(event, listener)
+    }
+}
+
+class PigpioImpl implements Pigpio {
+    private pi: llpigpio
+    private spiFactory: SpiFactory
+    private i2cFactory: I2cFactory
+    private bbSpiFactory: BBSpiFactory
+    private bbI2cFactory: BBI2cFactory
+    private autoClose: boolean
+    private users = new Set<unknown>()
+    private isClosed = false
+    readonly event: EventImple
+    readonly closeEvent = new MonoTypedEventEmitter<void>()
+    constructor (
+        pi: llpigpio,
+        autoClose: boolean
+    ) {
+        this.pi = pi
+        this.event = new EventImple(pi)
+        this.spiFactory = new SpiFactory(pi)
+        this.i2cFactory = new I2cFactory(pi)
+        this.bbSpiFactory = new BBSpiFactory(pi)
+        this.bbI2cFactory = new BBI2cFactory(pi)
+        this.autoClose = autoClose
     }
 
     gpio (no: number): Gpio {
@@ -163,29 +170,29 @@ class PigpioImpl implements Pigpio {
     }
 
     async close (): Promise<void> {
+        if (this.isClosed) { return }
+        this.isClosed = true
         await this.spiFactory.close()
         await this.i2cFactory.close()
         await this.bbSpiFactory.close()
         await this.bbI2cFactory.close()
         await this.pi.stop()
-        this.isClosed = true
+        await this.closeEvent.emit()
     }
 
-    autoCloseWrap<T extends TypedEvent<{close: void}>> (c: T): T {
-        if (this.autoClose) {
+    autoCloseWrap<T extends {closeEvent: MonoTypedEvent<void>}> (c: T): T {
+        if (this.autoClose && !this.isClosed) {
             this.users.add(c)
-            c.once('close', () => {
-                this.users.delete(c)
-                if (this.users.size === 0) {
-                    void this.close()
+            c.closeEvent.once(async () => {
+                if (this.users.has(c)) {
+                    this.users.delete(c)
+                    if (this.users.size === 0) {
+                        await this.close()
+                    }
                 }
             })
         }
         return c
-    }
-
-    get closed (): boolean {
-        return this.isClosed
     }
 }
 
