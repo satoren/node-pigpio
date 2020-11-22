@@ -8,6 +8,7 @@ pigpiod socket interface for node.js
 
 
 ## Requirements
+* Node 12.x or later
 * install and run pigopid
 http://abyz.me.uk/rpi/pigpio/download.html
 
