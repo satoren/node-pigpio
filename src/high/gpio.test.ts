@@ -32,6 +32,11 @@ test('create', () => {
     const gpio = createGpio(3, pi)
     expect(gpio.pin).toBe(3)
 })
+test('close', async () => {
+    const gpio = createGpio(3, pi)
+    expect(gpio.pin).toBe(3)
+    await gpio.close()
+})
 
 test('on edge', () => {
     const gpio = createGpio(3, pi)
@@ -64,6 +69,18 @@ test('on falling edge', () => {
     const func = mockNotifySocket.append.mock.calls[0][0].func as (gpio: number, level: 0 | 1 | 'TIMEOUT', tick: number) => void
     func(2, 1, 3)
     expect(listener).toHaveBeenCalledTimes(1)
+})
+
+test('on edge', () => {
+    const gpio = createGpio(3, pi)
+
+    const listener = jest.fn()
+    gpio.on('edge', listener)
+    gpio.on('fallingEdge', listener)
+    gpio.on('risingEdge', listener)
+
+    expect(mockNotifySocket.append).toHaveBeenCalledTimes(3)
+    expect(mockNotifySocket.append.mock.calls[0][0]).toMatchObject({ bit: 8, edge: 2, gpio: 3 })
 })
 test('once edge', () => {
     const gpio = createGpio(2, pi)
@@ -121,6 +138,13 @@ test('read', async () => {
     expect(mockRequestSocket.request).toBeCalledWith({ cmd: RequestCommand.READ.cmdNo, p1: 3, p2: 0, responseExtension: false })
     expect(v).toBe(1)
 })
+test('read with error return', async () => {
+    const gpio = createGpio(3, pi)
+
+    mockRequestSocket.request.mockResolvedValueOnce(({ cmd: RequestCommand.READ.cmdNo, p1: 3, p2: 0, res: 5 }))
+    const v = gpio.read()
+    await expect(v).rejects.toThrowError()
+})
 
 test.each([
     ['OUTPUT', 1],
@@ -129,6 +153,11 @@ test.each([
     const gpio = createGpio(3, pi)
     await gpio.setMode(mode)
     expect(mockRequestSocket.request).toBeCalledWith({ cmd: RequestCommand.MODES.cmdNo, p1: 3, p2: value, responseExtension: false })
+})
+test('setMode with error argument', async () => {
+    const gpio = createGpio(3, pi)
+    const ret = gpio.setMode('a' as any)
+    await expect(ret).rejects.toThrowError()
 })
 
 test.each([
@@ -141,6 +170,13 @@ test.each([
     expect(mockRequestSocket.request).toBeCalledWith({ cmd: RequestCommand.MODEG.cmdNo, p1: 3, p2: 0, responseExtension: false })
     expect(v).toBe(mode)
 })
+test('getMode with error return', async () => {
+    const gpio = createGpio(3, pi)
+
+    mockRequestSocket.request.mockResolvedValueOnce(({ cmd: RequestCommand.MODEG.cmdNo, p1: 3, p2: 0, res: 54 }))
+    const v = gpio.getMode()
+    await expect(v).rejects.toThrowError()
+})
 
 test.each([
     ['OFF', 0],
@@ -152,6 +188,11 @@ test.each([
     mockRequestSocket.request.mockResolvedValueOnce(({ cmd: RequestCommand.PUD.cmdNo, p1: 3, p2: value, res: 1 }))
     await gpio.setPullUpDown(mode)
     expect(mockRequestSocket.request).toBeCalledWith({ cmd: RequestCommand.PUD.cmdNo, p1: 3, p2: value, responseExtension: false })
+})
+test('setPullUpDown with error argument', async () => {
+    const gpio = createGpio(3, pi)
+    const ret = gpio.setPullUpDown('a' as any)
+    await expect(ret).rejects.toThrowError()
 })
 
 test('setServoPulsewidth', async () => {

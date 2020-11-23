@@ -53,6 +53,7 @@ class BBI2cImpl implements I2c {
 class BBI2cIf {
     private pi: llpigpio
     private instances: Set<BBI2cImpl> = new Set()
+    closed = false
 
     constructor (
         readonly sda: number,
@@ -79,6 +80,7 @@ class BBI2cIf {
     }
 
     async closedDevice (device:BBI2cImpl): Promise<void> {
+        if (!this.instances.has(device)) { return }
         this.instances.delete(device)
         if (this.instances.size === 0) {
             await this.close()
@@ -86,7 +88,11 @@ class BBI2cIf {
     }
 
     async close (): Promise<void> {
+        this.closed = true
         const { sda } = this
+        const close = Promise.all(Array.of(...this.instances.values()).map(i => i.close()))
+        this.instances.clear()
+        await close
         await this.pi.bb_i2c_close(sda)
     }
 }
@@ -104,7 +110,7 @@ export class BBI2cFactory {
         scl: number,
         baud: number): Promise<BBI2cIf> {
         const i2cif = this.instances.get(sda)
-        if (i2cif) {
+        if (i2cif && !i2cif.closed) {
             if (scl !== i2cif.scl) {
                 throw Error(`Invalid scl pin: ${scl} is different with opened ${i2cif.scl}`)
             }
