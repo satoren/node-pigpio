@@ -42,12 +42,33 @@ jest.mock('../lowlevel/NotifySocket', () => ({
 }))
 
 beforeEach(() => {
-    mockWrite.mockClear()
-    mockConnect.mockClear()
-    setNoDelay.mockClear()
-    mockDestroy.mockClear()
+    jest.clearAllMocks()
 })
 
+test('double close', async () => {
+    const pig = await pigpio('test', 333)
+
+    await pig.close()
+    await pig.close()
+})
+test('close all children', async () => {
+    const pig = await pigpio('test', 333)
+
+    const i2c = await pig.i2c({ bus: 1, address: 21 })
+    const bbi2c = await pig.i2c({ address: 21, baudRate: 1234, sda: 1, scl: 2 })
+    const spi = await pig.spi({ channel: 0, baudRate: 233 })
+    const bbspi = await pig.spi({ miso: 2, mosi: 3, cs: 4, sclk: 5, baudRate: 233 })
+
+    const a = Promise.all([i2c, spi, bbspi, bbi2c].map(e => {
+        return new Promise<boolean>((resolve) => {
+            e.closeEvent.once(() => resolve(true))
+        })
+    }))
+
+    await pig.close()
+    const c = await a
+    expect(c).toStrictEqual([true, true, true, true])
+})
 test('i2c open', async () => {
     const pig = await pigpio('test', 333)
     mockWrite.mockClear()
@@ -174,6 +195,17 @@ test('getPigpioVersion', async () => {
     const tick = await pig.getPigpioVersion()
     expect(tick).toBe(33)
 })
+test('eventTrigger', async () => {
+    const pig = await pigpio('test', 333, true)
+    await pig.eventTrigger('EVENT10')
+    expect(mockWrite).toBeCalledWith(Buffer.of(RequestCommand.EVT.cmdNo, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+})
+
+test('eventTrigger with invalid', async () => {
+    const pig = await pigpio('test', 333, true)
+    const ret = pig.eventTrigger('cc' as any)
+    await expect(ret).rejects.toThrowError()
+})
 
 test('events', async () => {
     const pig = await pigpio('test', 333, true)
@@ -183,4 +215,58 @@ test('events', async () => {
     pig.event.on('EVENT0', listener)
 
     expect(mockNotifySocket.appendEvent).toBeCalled()
+    // invoke callback
+    const func = mockNotifySocket.appendEvent.mock.calls[0][0].func as (event: number, tick: number) => void
+    func(0, 3)
+    expect(listener).toHaveBeenCalledTimes(1)
+
+    expect(mockNotifySocket.removeEvent).not.toBeCalled()
+
+    pig.event.off('EVENT0', listener)
+    expect(mockNotifySocket.removeEvent).toBeCalled()
+})
+test('events multiple on', async () => {
+    const pig = await pigpio('test', 333, true)
+
+    mockWrite.mockClear()
+    const listener = jest.fn()
+    pig.event.on('EVENT0', listener)
+    pig.event.on('EVENT1', listener)
+    pig.event.on('EVENT2', listener)
+    pig.event.on('EVENT3', listener)
+
+    expect(mockNotifySocket.appendEvent).toBeCalled()
+    // invoke callback
+    const func = mockNotifySocket.appendEvent.mock.calls[0][0].func as (event: number, tick: number) => void
+    func(0, 3)
+    expect(listener).toHaveBeenCalledTimes(1)
+
+    expect(mockNotifySocket.removeEvent).not.toBeCalled()
+
+    pig.event.off('EVENT0', listener)
+    expect(mockNotifySocket.removeEvent).toBeCalledTimes(1)
+    pig.event.off('EVENT1', listener)
+    expect(mockNotifySocket.removeEvent).toBeCalledTimes(2)
+    pig.event.off('EVENT1', listener)
+    expect(mockNotifySocket.removeEvent).toBeCalledTimes(2)
+    pig.event.off('EVENT3', listener)
+    expect(mockNotifySocket.removeEvent).toBeCalledTimes(3)
+    pig.event.off('EVENT6', listener)
+    expect(mockNotifySocket.removeEvent).toBeCalledTimes(3)
+})
+
+test('events once', async () => {
+    const pig = await pigpio('test', 333, true)
+
+    mockWrite.mockClear()
+    const listener = jest.fn()
+    pig.event.once('EVENT0', listener)
+
+    expect(mockNotifySocket.appendEvent).toBeCalled()
+
+    // invoke callback
+    const func = mockNotifySocket.appendEvent.mock.calls[0][0].func as (event: number, tick: number) => void
+    func(0, 3)
+    expect(listener).toHaveBeenCalledTimes(1)
+    expect(mockNotifySocket.removeEvent).toBeCalled()
 })

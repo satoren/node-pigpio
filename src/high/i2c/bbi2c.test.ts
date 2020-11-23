@@ -69,3 +69,28 @@ test('read 2 sequence by zip ', async () => {
     expect(readData).toMatchObject(responseData)
     expect(readData2).toMatchObject(responseData2)
 })
+
+test('Can not open same pin with same parameter', async () => {
+    const i2c = await i2cFactory.create(device, sda, scl, baudrate)
+    const i2c2 = await i2cFactory.create(device + 1, sda, scl, baudrate)
+    await i2c.close()
+    await i2c2.close()
+})
+test('Can not open same pin with different parameter', async () => {
+    const i2c = await i2cFactory.create(device, sda, scl, baudrate)
+    const i2c2 = i2cFactory.create(device, sda, scl, baudrate + 100)
+    const i2c3 = i2cFactory.create(device, sda, scl + 1, baudrate)
+
+    await expect(i2c2).rejects.toThrowError()
+    await expect(i2c3).rejects.toThrowError()
+    await i2c.close()
+
+    // alow reopen after closed i2c
+    const i2c4 = await i2cFactory.create(device, sda, scl, baudrate + 100)
+    const baud = Buffer.alloc(4)
+    baud.writeUInt32LE(baudrate + 100)
+    expect(requestSocket.request).toBeCalledWith({ cmd: RequestCommand.BI2CO.cmdNo, extension: baud, p1: sda, p2: scl, responseExtension: false })
+    requestSocket.request.mockClear()
+    await i2c4.close()
+    expect(requestSocket.request).toBeCalledWith({ cmd: RequestCommand.BI2CC.cmdNo, p1: sda, p2: 0, responseExtension: false })
+})

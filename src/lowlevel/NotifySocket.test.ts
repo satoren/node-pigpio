@@ -3,6 +3,7 @@
 import { EventEmitter } from 'events'
 import { createNotifySocket, NotifySocket, EventCallback, EdgeCallback } from './NotifySocket'
 import { RequestSocket } from './RequestSocket'
+import RequestCommand from '../lowlevel/command/RequestCommands'
 
 const mockRequest = {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -202,4 +203,30 @@ test('notify event', () => {
     mockSocket.emit('data', notifyToBuffer({ seqno: 0, flags: EventFlag | 2, tick: 555, level: 44543 }))
     expect(e1.func).lastCalledWith(5, 32)
     expect(e2.func).lastCalledWith(2, 555)
+})
+test('close event', async () => {
+    const e1: EventCallback = { event: 5, bit: 1 << 5, func: jest.fn() }
+    const e2: EventCallback = { event: 2, bit: 1 << 2, func: jest.fn() }
+    target.appendEvent(e1)
+    target.appendEvent(e2)
+
+    mockWrite.mockClear()
+    await target.close()
+    expect(mockWrite).toBeCalledWith(Buffer.from([
+        RequestCommand.NC.cmdNo,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0]))
 })
