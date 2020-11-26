@@ -105,6 +105,7 @@ export interface GpioEvent {
 export type GpioEventArgsType = { edge: GpioEdgeEvent; fallingEdge: GpioEdgeEvent; risingEdge: GpioEdgeEvent;}
 export type GpioEventNameType = keyof GpioEventArgsType
 
+/** Gpio */
 export interface Gpio extends TypedEventTarget<GpioEventArgsType> {
     setServoPulsewidth(pulsewidth: number): Promise<void>;
     getServoPulsewidth(): Promise<number>;
@@ -135,9 +136,13 @@ export type I2cZipCommand =
   | { type: 'Write'; data: Buffer }
   | { type: 'Read'; size: number };
 
+/** I2C */
 export interface I2c {
+    /** write data to I2C device */
     writeDevice(data: Buffer): Promise<void>;
+    /** read data from I2C device */
     readDevice(count: number): Promise<Buffer>;
+    /** zipped command for I2C read/writes */
     zip(...commands: I2cZipCommand[]): Promise<Buffer[]>;
     close(): Promise<void>;
     readonly closeEvent:MonoTypedEventTarget<void>
@@ -154,9 +159,11 @@ export type BBI2COption = {
     baudRate: number;
 };
 
-// a
+/** Spi */
 export interface Spi {
+    /** write data to Spi device */
     writeDevice(data: Buffer): Promise<void>;
+    /** read data from Spi device */
     readDevice(count: number): Promise<Buffer>;
     xferDevice(data: Buffer): Promise<Buffer | undefined>;
     close(): Promise<void>;
@@ -180,17 +187,32 @@ export type BBSpiOption = {
     flags?: number;
 };
 
+/**
+ * High level pigpio interface
+ */
 export interface Pigpio {
+    /** get gpio interface */
     gpio(no: number): Gpio;
+    /** get i2c interface */
     i2c(option: I2COption | BBI2COption): Promise<I2c>;
+    /** get spi interface */
     spi(option: SpiOption | BBSpiOption): Promise<Spi>;
+    /** close pigpio  */
     close(): Promise<void>;
 
+    /** pigpio event  */
     readonly event: TypedEventTarget<{ [K in EventName]: GpioEvent} >
+
+    /** trigger pigpio event  */
+    eventTrigger(event: EventName): Promise<void>;
+
+    /** notify event when closed this interface */
     readonly closeEvent:MonoTypedEventTarget<void>
 
+    /** get current tick  */
     getCurrentTick(): Promise<number>;
+    /** get raspberry pi hardware rivision  */
     getHardwareRevision(): Promise<number>;
+    /** get pigpio library version */
     getPigpioVersion(): Promise<number>;
-    eventTrigger(event: EventName): Promise<void>;
 }

@@ -65,7 +65,6 @@ class SpiImpl implements Spi {
     }
 }
 export class SpiFactory {
-    private instances: Set<SpiImpl> = new Set()
     private pi: llpigpio
 
     constructor (pi: llpigpio) {
@@ -78,17 +77,8 @@ export class SpiFactory {
         flags: number
     ): Promise<Spi> => {
         const spi = new SpiImpl(this.pi)
-        this.instances.add(spi)
         await spi.open(channel, baudRate, flags)
-        spi.closeEvent.once(() => {
-            this.instances.delete(spi)
-        })
         return spi
-    }
-
-    close = async (): Promise<void> => {
-        const instances = [...this.instances.values()]
-        await Promise.all([...instances.map(v => v.close())])
     }
 }
 export default { SpiFactory }

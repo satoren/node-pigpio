@@ -13,6 +13,9 @@ class SocketImpl implements RequestSocket {
 
     requestQueue = new PromiseQueue();
     connected = false;
+    closeHandler = () => {
+        this.connected = false
+    }
 
     constructor () {
         this.sock = new net.Socket()
@@ -21,15 +24,7 @@ class SocketImpl implements RequestSocket {
     async connect (port: number, host: string): Promise<void> {
         const { sock } = this
         sock.connect(port, host)
-        sock.on('close', (hadErr) => {
-            this.connected = false
-            if (hadErr && !sock.connecting && !sock.destroyed) {
-                sock.connect(port, host)
-                sock.once('connect', () => {
-                    this.connected = true
-                })
-            }
-        })
+        sock.once('close', this.closeHandler)
         await once(sock, 'connect')
         this.connected = true
         sock.setNoDelay()
@@ -48,6 +43,8 @@ class SocketImpl implements RequestSocket {
 
     // eslint-disable-next-line @typescript-eslint/require-await
     async close () {
+        this.sock.off('close', this.closeHandler)
+        this.connected = false
         this.sock.destroy()
     }
 }

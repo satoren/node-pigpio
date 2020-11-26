@@ -80,7 +80,6 @@ class I2cImpl implements I2c {
 }
 
 export class I2cFactory {
-    private instances: Set<I2cImpl> = new Set()
     private pi: llpigpio
 
     constructor (pi: llpigpio) {
@@ -93,16 +92,8 @@ export class I2cFactory {
         flags?: number
     ): Promise<I2c> => {
         const i2c = new I2cImpl(this.pi)
-        this.instances.add(i2c)
         await i2c.open(bus, addr, flags)
-        i2c.closeEvent.once(() => { this.instances.delete(i2c) })
         return i2c
-    }
-
-    close = async (): Promise<void> => {
-        const instances = [...this.instances.values()]
-        const closes = instances.map(v => v.close())
-        await Promise.all(closes)
     }
 }
 export default { I2cFactory }

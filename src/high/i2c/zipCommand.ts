@@ -1,6 +1,8 @@
 /* eslint-disable no-bitwise */
 import { I2cZipCommand } from '../../types'
 
+export type { I2cZipCommand }
+
 export enum ZipCommand {
     End = 0,
     Escape = 1,

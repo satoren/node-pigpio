@@ -1,5 +1,4 @@
 import net from 'net'
-import { on } from 'events'
 
 export interface RequestParam {
     cmd: number;
@@ -59,7 +58,7 @@ async function execRequest (
     }
 
     let data: Buffer = Buffer.alloc(0)
-    for await (const [chunk] of on(sock, 'data')) {
+    for await (const chunk of sock) {
         data = Buffer.concat([data, chunk as Buffer])
         const response = fromBuffer(data)
         if (response) {

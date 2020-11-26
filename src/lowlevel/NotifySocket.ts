@@ -83,11 +83,6 @@ class SocketImpl extends EventEmitter implements NotifySocket {
         const { sock } = this
 
         sock.connect(port, host)
-        sock.on('close', (hadErr) => {
-            if (hadErr && !sock.connecting && !sock.destroyed) {
-                sock.connect(port, host)
-            }
-        })
         await once(sock, 'connect')
         sock.setNoDelay()
     }

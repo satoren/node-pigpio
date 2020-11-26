@@ -1,9 +1,16 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { EventEmitter } from 'events'
+
 import { createNotifySocket, NotifySocket, EventCallback, EdgeCallback } from './NotifySocket'
 import { RequestSocket } from './RequestSocket'
 import RequestCommand from '../lowlevel/command/RequestCommands'
+
+import { Socket } from '../__mocks__/net'
+
+const mockSocket = new Socket()
+jest.mock('net', () => ({ Socket: jest.fn().mockImplementation(() => mockSocket) }))
+
+const sleep = (msec: number) => {
+    return new Promise((resolve) => setTimeout(resolve, msec))
+}
 
 const mockRequest = {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -16,33 +23,6 @@ const mockRequest = {
 jest.mock('../lowlevel/RequestSocket', () => ({
     createRequestSocket: () => mockRequest
 }))
-
-const mockConnect = jest.fn()
-const mockWrite = jest.fn((data: Buffer) => Buffer.concat([data.slice(0, 12), Buffer.of(0, 0, 0, 0)]))
-const setNoDelay = jest.fn()
-const mockDestroy = jest.fn()
-const mockSocket: EventEmitter = new EventEmitter()
-jest.mock('net', () => {
-    return {
-        Socket: jest.fn().mockImplementation(() => {
-            const socketMock: any = mockSocket
-            socketMock.connect = (...args:any[]) => {
-                mockConnect(...args)
-                setImmediate(() => {
-                    mockSocket.emit('connect', {})
-                })
-            }
-            socketMock.write = (data:Buffer) => {
-                setImmediate(() => {
-                    mockSocket.emit('data', mockWrite(data))
-                })
-            }
-            socketMock.setNoDelay = setNoDelay
-            socketMock.destroy = mockDestroy
-            return socketMock
-        })
-    }
-})
 
 let target: NotifySocket
 beforeEach(async () => {
@@ -147,7 +127,7 @@ function notifyToBuffer ({ seqno, flags, tick, level }: Notify): Buffer {
     return buffer
 }
 
-test('notify edge', () => {
+test('notify edge', async () => {
     const e1: EdgeCallback = { gpio: 5, edge: 2, bit: 1 << 5, func: jest.fn() }
     const fallingEdge2: EdgeCallback = { gpio: 2, edge: 1, bit: 1 << 2, func: jest.fn() }
     const risingEdge2: EdgeCallback = { gpio: 2, edge: 0, bit: 1 << 2, func: jest.fn() }
@@ -156,6 +136,8 @@ test('notify edge', () => {
     target.append(fallingEdge2)
 
     mockSocket.emit('data', notifyToBuffer({ seqno: 0, flags: 0, tick: 32, level: 1 << 5 }))
+
+    await sleep(0.1)
     expect(e1.func).lastCalledWith(5, 1, 32)
     mockSocket.emit('data', notifyToBuffer({ seqno: 0, flags: 0, tick: 32, level: 0 }))
     expect(e1.func).lastCalledWith(5, 0, 32)
@@ -210,9 +192,9 @@ test('close event', async () => {
     target.appendEvent(e1)
     target.appendEvent(e2)
 
-    mockWrite.mockClear()
+    mockSocket.write.mockClear()
     await target.close()
-    expect(mockWrite).toBeCalledWith(Buffer.from([
+    expect(mockSocket.write).toBeCalledWith(Buffer.from([
         RequestCommand.NC.cmdNo,
         0,
         0,

@@ -135,10 +135,5 @@ export class BBI2cFactory {
         const i2c = await this.getInterface(sda, scl, baud)
         return i2c.create(device)
     }
-
-    async close (): Promise<void> {
-        const instances = [...this.instances.values()]
-        await Promise.all([...instances.map(v => v.close())])
-    }
 }
 export default { BBI2cFactory }

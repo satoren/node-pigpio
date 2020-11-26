@@ -11,6 +11,7 @@ test('init', async () => {
     const ssd1306 = new Ssd1306({ command, data, close })
     await ssd1306.init()
     expect(command).toHaveBeenCalled()
+    await ssd1306.close()
 })
 
 test('draw vertical 1 line', async () => {
@@ -27,6 +28,7 @@ test('draw vertical 1 line', async () => {
     )
     const expectData = Buffer.concat([Buffer.of(0b01000000), verticalline])
     expect(data).toHaveBeenCalledWith(expectData)
+    await ssd1306.close()
 })
 test('draw horizontal 1 line', async () => {
     const close = jest.fn()
@@ -41,4 +43,5 @@ test('draw horizontal 1 line', async () => {
     const line = Buffer.of(...range(0, 127).map(() => 0b000000001), ...Buffer.alloc(1024 - 128))
     const expectData = Buffer.concat([Buffer.of(0b01000000), line])
     expect(data).toHaveBeenCalledWith(expectData)
+    await ssd1306.close()
 })

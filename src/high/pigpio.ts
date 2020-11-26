@@ -91,6 +91,10 @@ class EventImple implements TypedEventTarget<{ [K in EventName]: GpioEvent} > {
     }
 }
 
+interface Closable {
+    close: ()=> void | Promise<void>
+}
+
 class PigpioImpl implements Pigpio {
     private pi: llpigpio
     private spiFactory: SpiFactory
@@ -98,7 +102,7 @@ class PigpioImpl implements Pigpio {
     private bbSpiFactory: BBSpiFactory
     private bbI2cFactory: BBI2cFactory
     private autoClose: boolean
-    private users = new Set<unknown>()
+    private users = new Set<Closable>()
     private isClosed = false
     readonly event: EventImple
     readonly closeEvent = new MonoTypedEventEmitter<void>()
@@ -177,26 +181,23 @@ class PigpioImpl implements Pigpio {
     async close (): Promise<void> {
         if (this.isClosed) { return }
         this.isClosed = true
-        await this.spiFactory.close()
-        await this.i2cFactory.close()
-        await this.bbSpiFactory.close()
-        await this.bbI2cFactory.close()
+        const children = Array.from(this.users.values()).map(user => user.close())
+        this.users.clear()
+        await Promise.all(children)
         await this.pi.stop()
         await this.closeEvent.emit()
     }
 
-    autoCloseWrap<T extends {closeEvent: MonoTypedEventTarget<void>}> (c: T): T {
-        if (this.autoClose && !this.isClosed) {
-            this.users.add(c)
-            c.closeEvent.once(async () => {
-                if (this.users.has(c)) {
-                    this.users.delete(c)
-                    if (this.users.size === 0) {
-                        await this.close()
-                    }
+    autoCloseWrap<T extends {closeEvent: MonoTypedEventTarget<void>} & Closable> (c: T): T {
+        this.users.add(c)
+        c.closeEvent.once(async () => {
+            if (this.users.has(c)) {
+                this.users.delete(c)
+                if (this.autoClose && this.users.size === 0) {
+                    await this.close()
                 }
-            })
-        }
+            }
+        })
         return c
     }
 }
@@ -204,5 +205,7 @@ class PigpioImpl implements Pigpio {
 export const pigpio = async (host?: string, port?: number, autoClose?:boolean): Promise<Pigpio> => {
     return new PigpioImpl(await pi(host, port), !!autoClose)
 }
+
+export type { Pigpio }
 
 export default { pigpio }
