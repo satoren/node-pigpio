@@ -1,6 +1,6 @@
 {
   "name": "@node-pigpio/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "pigpiod client for node.js",
   "main": "dist/pigpio.js",
   "types": "dist/pigpio.d.ts",

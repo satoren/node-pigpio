@@ -1,6 +1,6 @@
 {
   "name": "@node-pigpio/devices",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "> TODO: description",
   "author": "satoren <satoreyo@hotmail.com>",
   "homepage": "https://github.com/satoren/node-pigpio#readme",
@@ -28,6 +28,6 @@
     "url": "https://github.com/satoren/node-pigpio/issues"
   },
   "dependencies": {
-    "@node-pigpio/highlevel": "^0.1.0"
+    "@node-pigpio/highlevel": "^0.1.1"
   }
 }

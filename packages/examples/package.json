@@ -1,6 +1,6 @@
 {
   "name": "node-pigpio-example",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "examples for node-pigpio",
   "main": "index.js",
   "private": true,
@@ -15,8 +15,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@node-pigpio/devices": "^0.1.0",
-    "@node-pigpio/highlevel": "^0.1.0",
-    "@node-pigpio/util": "^0.1.0"
+    "@node-pigpio/devices": "^0.1.1",
+    "@node-pigpio/highlevel": "^0.1.1",
+    "@node-pigpio/util": "^0.1.1"
   }
 }
