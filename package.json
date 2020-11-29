@@ -7,8 +7,9 @@
   "scripts": {
     "bootstrap": "npm install lerna && lerna bootstrap && npm install",
     "build": "lerna run build",
-    "test": "lerna run test",
-    "lint": "lerna run lint"
+    "test": "jest",
+    "lint": "lerna run lint",
+    "test-ci": "jest --coverage"
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",

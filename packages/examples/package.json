@@ -10,7 +10,7 @@
     "prepack": "rm -Rf ./dist && tsc",
     "lint": "eslint \"src/**.ts\"",
     "lint:fix": "eslint --fix \"src/**/*.ts\"",
-    "coverage": "jest --coverage"
+    "coverage": ""
   },
   "author": "",
   "license": "ISC",
