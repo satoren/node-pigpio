@@ -1,6 +1,6 @@
 {
   "name": "@node-pigpio/devices-sensor",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Sensor drivers for raspberry pi",
   "keywords": [
     "raspberrypi",
