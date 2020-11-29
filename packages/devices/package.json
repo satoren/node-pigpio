@@ -1,6 +1,6 @@
 {
   "name": "@node-pigpio/devices",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "generic devices class for node-pigpio",
   "author": "satoren <satoreyo@hotmail.com>",
   "homepage": "https://github.com/satoren/node-pigpio#readme",
@@ -33,7 +33,7 @@
     "url": "https://github.com/satoren/node-pigpio/issues"
   },
   "dependencies": {
-    "@node-pigpio/highlevel": "^0.1.3"
+    "@node-pigpio/highlevel": "^0.2.0"
   },
   "gitHead": "4e16d5c8c55e98620d674cae129f987f6e507844"
 }
