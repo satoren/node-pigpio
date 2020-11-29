@@ -7,11 +7,11 @@
   "license": "ISC",
   "main": "dist/index.js",
   "directories": {
-    "lib": "lib",
+    "dist": "dist",
     "test": "__tests__"
   },
   "files": [
-    "lib"
+    "dist"
   ],
   "publishConfig": {
     "access": "public"
