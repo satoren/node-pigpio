@@ -29,5 +29,6 @@
   },
   "dependencies": {
     "@node-pigpio/highlevel": "^0.1.1"
-  }
+  },
+  "gitHead": "4e16d5c8c55e98620d674cae129f987f6e507844"
 }
