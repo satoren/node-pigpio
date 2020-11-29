@@ -1,6 +1,6 @@
 {
   "name": "@node-pigpio/devices",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "> TODO: description",
   "author": "satoren <satoreyo@hotmail.com>",
   "homepage": "https://github.com/satoren/node-pigpio#readme",
@@ -22,11 +22,12 @@
     "prepack": "rm -Rf ./dist && tsc",
     "lint": "eslint \"src/**.ts\"",
     "lint:fix": "eslint --fix \"src/**/*.ts\"",
-    "coverage": "jest --coverage"},
+    "coverage": "jest --coverage"
+  },
   "bugs": {
     "url": "https://github.com/satoren/node-pigpio/issues"
   },
   "dependencies": {
-    "@node-pigpio/highlevel": "^0.0.0"
+    "@node-pigpio/highlevel": "^0.1.0"
   }
 }
