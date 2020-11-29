@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events'
+import { EventEmitter, on } from 'events'
 
 import { Pigpio, I2c, I2COption, BBI2COption, defaultFactory } from '@node-pigpio/highlevel'
 import { AsyncTaskScheduler, CancelableTask, Sleepable, CanceledError, TypedEventTarget } from '@node-pigpio/util'
@@ -36,6 +36,8 @@ export interface CCS811 extends TypedEventTarget<{data:MeasureData, error: Error
     readonly CO2: number | undefined
     readonly tVOC: number | undefined
     readonly error: string | undefined
+
+    [Symbol.asyncIterator](): AsyncIterator<MeasureData>
 }
 const openI2c = async (ic2option: (I2COption | BBI2COption), gpio?: Pigpio) => {
     return await (gpio ?? await defaultFactory.get()).i2c(ic2option)
@@ -261,6 +263,12 @@ export const CCS811 = async (option? : Option): Promise<CCS811> => {
                 }
             }
             await this.checkForError(status, errorId)
+        }
+
+        async * [Symbol.asyncIterator] () {
+            for await (const data of on(this, 'data')) {
+                yield data
+            }
         }
     }()
 
