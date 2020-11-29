@@ -1,14 +1,21 @@
 {
-  "name": "@node-pigpio/devices",
+  "name": "@node-pigpio/devices-display",
   "version": "0.1.3",
-  "description": "generic devices class for node-pigpio",
+  "description": "display drivers for raspberry pi",
   "author": "satoren <satoreyo@hotmail.com>",
-  "homepage": "https://github.com/satoren/node-pigpio#readme",
+  "homepage": "https://github.com/satoren/node-pigpio.git",
   "license": "ISC",
   "main": "dist/index.js",
+  "directories": {
+    "dist": "dist",
+    "test": "__tests__"
+  },
   "files": [
     "dist"
   ],
+  "dependencies": {
+    "@node-pigpio/highlevel": "^0.1.3"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -16,6 +23,12 @@
     "type": "git",
     "url": "git+https://github.com/satoren/node-pigpio.git"
   },
+  "keywords": [
+    "raspberrypi",
+    "pigpio",
+    "ssd1306",
+    "ssd1331"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "jest",
@@ -24,16 +37,7 @@
     "lint:fix": "eslint --fix \"src/**/*.ts\"",
     "coverage": "jest --coverage"
   },
-  "keywords": [
-    "raspberrypi",
-    "pigpio",
-    "gpio"
-  ],
   "bugs": {
     "url": "https://github.com/satoren/node-pigpio/issues"
-  },
-  "dependencies": {
-    "@node-pigpio/highlevel": "^0.1.3"
-  },
-  "gitHead": "4e16d5c8c55e98620d674cae129f987f6e507844"
+  }
 }

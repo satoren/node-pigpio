@@ -105,6 +105,8 @@ export interface GpioEvent {
 export type GpioEventArgsType = { edge: GpioEdgeEvent; fallingEdge: GpioEdgeEvent; risingEdge: GpioEdgeEvent;}
 export type GpioEventNameType = keyof GpioEventArgsType
 
+export type GpioEdgeType = 'edge' | 'risingEdge' | 'fallingEdge'
+
 /** Gpio */
 export interface Gpio extends TypedEventTarget<GpioEventArgsType> {
     setServoPulsewidth(pulsewidth: number): Promise<void>;
@@ -125,6 +127,8 @@ export interface Gpio extends TypedEventTarget<GpioEventArgsType> {
     setPullUpDown(pud: PullUpDownType): Promise<void>;
     write(level: 0 | 1): Promise<void>;
     read(): Promise<0 | 1>;
+
+    waitForEdge (edge: GpioEdgeType, timeout?: number): Promise<boolean>;
 
     close(): Promise<void>;
     readonly closeEvent:MonoTypedEventTarget<void>

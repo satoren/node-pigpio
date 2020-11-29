@@ -6,6 +6,7 @@ import {
     GpioModeTuple,
     PullUpDownType,
     GpioEdgeEvent,
+    GpioEdgeType,
     GpioEventArgsType
 } from './types'
 import { MonoTypedEventEmitter } from '@node-pigpio/util'
@@ -32,7 +33,8 @@ class Callbacks {
     }
 }
 
-function edgeValue (n: 'edge' | 'risingEdge' | 'fallingEdge') {
+
+function edgeValue (n: GpioEdgeType) {
     switch (n) {
         case 'edge':
             return pigpio.EITHER_EDGE
@@ -56,30 +58,30 @@ class GpioImpl implements Gpio {
         this.pi = pi
     }
 
-    addListener<E extends 'edge' | 'risingEdge' | 'fallingEdge' > (event: E, listener: (args: GpioEventArgsType[E]) => void): this {
+    addListener<E extends GpioEdgeType > (event: E, listener: (args: GpioEventArgsType[E]) => void): this {
         this.appendCallback(event, listener)
         return this
     }
 
-    on<E extends 'edge' | 'risingEdge' | 'fallingEdge' > (event: E, listener: (args: GpioEventArgsType[E]) => void): this {
+    on<E extends GpioEdgeType > (event: E, listener: (args: GpioEventArgsType[E]) => void): this {
         return this.addListener(event, listener)
     }
 
-    once<E extends 'edge' | 'risingEdge' | 'fallingEdge'> (event: E, listener: (args: GpioEventArgsType[E]) => void): this {
+    once<E extends GpioEdgeType> (event: E, listener: (args: GpioEventArgsType[E]) => void): this {
         this.appendCallback(event, listener, true)
         return this
     }
 
-    removeListener<E extends 'edge' | 'risingEdge' | 'fallingEdge'> (event: E, listener: (args: GpioEventArgsType[E]) => void): this {
+    removeListener<E extends GpioEdgeType> (event: E, listener: (args: GpioEventArgsType[E]) => void): this {
         this.removeCallback(event, listener)
         return this
     }
 
-    off<E extends 'edge' | 'risingEdge' | 'fallingEdge'> (event: E, listener: (args: GpioEventArgsType[E]) => void): this {
+    off<E extends GpioEdgeType> (event: E, listener: (args: GpioEventArgsType[E]) => void): this {
         return this.removeListener(event, listener)
     }
 
-    appendCallback (edge:'edge' | 'risingEdge' | 'fallingEdge', listener: (args: GpioEdgeEvent) => void, once = false) {
+    appendCallback (edge:GpioEdgeType, listener: (args: GpioEdgeEvent) => void, once = false) {
         const v = edgeValue(edge)
         const c = this.pi.callback(this.gpio, v, (_, level, tick) : void => {
             listener({ level, tick })
@@ -88,7 +90,7 @@ class GpioImpl implements Gpio {
         this.callbacks.put(v, listener, c)
     }
 
-    removeCallback (edge:'edge' | 'risingEdge' | 'fallingEdge', listener: (args: GpioEdgeEvent) => void) {
+    removeCallback (edge:GpioEdgeType, listener: (args: GpioEdgeEvent) => void) {
         const v = edgeValue(edge)
         const c = this.callbacks.get(v, listener)
         c?.cancel()
@@ -167,6 +169,10 @@ class GpioImpl implements Gpio {
             return res
         }
         throw new Error('Unknown level error')
+    }
+
+    async waitForEdge (edge: GpioEdgeType, timeout?: number): Promise<boolean> {
+        return this.pi.wait_for_edge(this.gpio, edgeValue(edge), timeout)
     }
 
     get pin (): number {

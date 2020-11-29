@@ -17,6 +17,7 @@
   "dependencies": {
     "@node-pigpio/devices": "^0.1.3",
     "@node-pigpio/highlevel": "^0.1.3",
+    "@node-pigpio/devices-sensor": "^0.1.3",
     "@node-pigpio/util": "^0.1.3"
   }
 }

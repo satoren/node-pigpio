@@ -16,6 +16,13 @@
   "publishConfig": {
     "access": "public"
   },
+  "keywords": [
+    "raspberrypi",
+    "pigpio",
+    "gpio",
+    "i2c",
+    "spi"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/satoren/node-pigpio.git"

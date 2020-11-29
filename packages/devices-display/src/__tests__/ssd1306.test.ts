@@ -1,4 +1,4 @@
-import { Ssd1306 } from './ssd1306'
+import { Ssd1306 } from '../ssd1306'
 
 const range = (start: number, end: number) => Array.from(
     { length: end - start + 1 }, (v, k) => k + start

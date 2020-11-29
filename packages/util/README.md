@@ -5,7 +5,23 @@
 ## Usage
 
 ```
-const util = require('@node-pigpio/util');
+var { usingAsync } = require("@node-pigpio/util")
 
-// TODO: DEMONSTRATE API
+
+class Closable {
+   use() {
+   console.log('use')
+   }
+   close() {
+   console.log('closed')
+   }
+}
+
+await usingAsync(new Closable, (c)=>{
+   c.use()
+})
+
+// output:
+// use
+// closed
 ```

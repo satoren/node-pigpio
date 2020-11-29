@@ -4,7 +4,7 @@
   "description": "> TODO: description",
   "author": "satoren <satoreyo@hotmail.com>",
   "homepage": "https://github.com/satoren/node-pigpio#readme",
-  "license": "MIT",
+  "license": "ISC",
   "main": "dist/index.js",
   "directories": {
     "dist": "dist",

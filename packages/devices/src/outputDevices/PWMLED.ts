@@ -129,8 +129,8 @@ export const PWMLED = async (pin: number, activeHigh = true, initialValue = 0, f
         return await p.getPWMFrequency()
     }
 
-    const close = () => {
-        p.close()
+    const close = async () => {
+        await p.close()
     }
 
     await p.setMode('OUTPUT')

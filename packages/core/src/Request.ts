@@ -1,4 +1,5 @@
 import net from 'net'
+import { on } from 'events'
 
 export interface RequestParam {
     cmd: number;
@@ -58,7 +59,7 @@ async function execRequest (
     }
 
     let data: Buffer = Buffer.alloc(0)
-    for await (const chunk of sock) {
+    for await (const [chunk] of on(sock, 'data')) {
         data = Buffer.concat([data, chunk as Buffer])
         const response = fromBuffer(data)
         if (response) {
@@ -78,7 +79,7 @@ async function execRequest (
             }
         }
     }
-    throw new Error('Invalid Response')
+    throw new Error('Invalid Response2')
 }
 
 export function requestFactory (

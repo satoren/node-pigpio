@@ -17,7 +17,7 @@ http://abyz.me.uk/rpi/pigpio/download.html
 
 ## Install
 ```
-npm install node-pigpio-if
+npm install @node-pigpio/core
 ```
 
 ## Usage

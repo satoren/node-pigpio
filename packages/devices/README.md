@@ -1,6 +1,6 @@
 # `@node-pigpio/devices`
 
-> TODO: description
+generic devices class for node-pigpio
 
 ## Usage
 

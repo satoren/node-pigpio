@@ -58,7 +58,7 @@ const createDeviceInterface = async (spi: Spi, dc: Gpio): Promise<DeviceInterfac
             await spi.writeDevice(data)
         },
         close: async ():Promise<void> => {
-            dc.close()
+            await dc.close()
             await spi.close()
         }
     })
@@ -190,7 +190,7 @@ export class Ssd1331 {
     }
 
     async close () : Promise<void> {
-        this.rs.close()
+        await this.rs.close()
         await this.device.close()
     }
 }

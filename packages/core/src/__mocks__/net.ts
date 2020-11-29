@@ -37,7 +37,9 @@ export class Socket extends EventEmitter {
     });
 
     write = jest.fn((data:Buffer) => {
-        this.emit('data', data)
+        setImmediate(() => {
+            this.emit('data', data)
+        })
     });
 
     setNoDelay = jest.fn();

@@ -1,5 +1,4 @@
-import { inputDevices } from '@node-pigpio/devices'
-import CCS811 = inputDevices.CCS811
+import { CCS811 } from '@node-pigpio/devices-sensor'
 
 (async () => {
     const bbi2c = { ic2option: { sda: 22, scl: 27, address: 0x5a, baudRate: 115200 } }

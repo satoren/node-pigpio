@@ -88,8 +88,8 @@ export const LED = async (pin: number, activeHigh = true, initialValue = false, 
         return await isLit() ? 1 : 0
     }
 
-    const close = () => {
-        p.close()
+    const close = async () => {
+        await p.close()
     }
 
     const led: LED = {

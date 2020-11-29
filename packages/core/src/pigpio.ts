@@ -254,7 +254,7 @@ export interface pigpio {
     wait_for_edge(
         user_gpio: number,
         edge: typeof RISING_EDGE | typeof FALLING_EDGE | typeof EITHER_EDGE,
-        wait_timeout: number
+        wait_timeout?: number
     ): Promise<boolean>;
 
     // ADVANCED
@@ -1152,17 +1152,19 @@ export async function pi (host?: string, port?: number): Promise<pigpio> {
         wait_for_edge (
             user_gpio: number,
             edge: EdgeType,
-            wait_timeout: number
+            wait_timeout?: number
         ): Promise<boolean> {
             return new Promise<boolean>((resolve) => {
                 const e = this.callback(user_gpio, edge, () => {
                     resolve(true)
                     e.cancel()
                 })
-                setTimeout(() => {
-                    resolve(false)
-                    e.cancel()
-                }, wait_timeout * 1000)
+                if (wait_timeout != null) {
+                    setTimeout(() => {
+                        resolve(false)
+                        e.cancel()
+                    }, wait_timeout * 1000)
+                }
             })
         }
 
