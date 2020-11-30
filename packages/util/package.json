@@ -1,6 +1,6 @@
 {
   "name": "@node-pigpio/util",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "> TODO: description",
   "author": "satoren <satoreyo@hotmail.com>",
   "homepage": "https://github.com/satoren/node-pigpio#readme",
