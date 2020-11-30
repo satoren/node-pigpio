@@ -1,6 +1,6 @@
 {
   "name": "@node-pigpio/devices",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "generic devices class for node-pigpio",
   "author": "satoren <satoreyo@hotmail.com>",
   "homepage": "https://github.com/satoren/node-pigpio#readme",

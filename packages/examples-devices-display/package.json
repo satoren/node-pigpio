@@ -1,6 +1,6 @@
 {
   "name": "@node-pigpio/examples-devices-display",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "> TODO: description",
   "author": "satoren <satoreyo@hotmail.com>",
   "homepage": "https://github.com/satoren/node-pigpio#readme",
@@ -27,7 +27,7 @@
     "coverage": ""
   },
   "dependencies": {
-    "@node-pigpio/devices-display": "^0.2.1",
+    "@node-pigpio/devices-display": "^0.2.2",
     "canvas": "^2.6.1"
   },
   "bugs": {
