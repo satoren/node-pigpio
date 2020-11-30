@@ -1,11 +1,11 @@
 import { createCanvas, Canvas } from 'canvas'
-import { Ssd1331 } from '@node-pigpio/devices-display'
+import { Ssd1306 } from '@node-pigpio/devices-display'
 
 const sleep = (msec: number): Promise<void> => {
     return new Promise((resolve) => setTimeout(resolve, msec))
 }
 const drawClock = (canvas: Canvas) => {
-    const ctx = canvas.getContext('2d', { pixelFormat: 'RGB16_565' })
+    const ctx = canvas.getContext('2d', { pixelFormat: 'A1' })
 
     // sample animation from https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Basic_animations
     const now = new Date()
@@ -13,11 +13,10 @@ const drawClock = (canvas: Canvas) => {
     ctx.scale(0.4, 0.4)
     ctx.clearRect(0, 0, 150, 150)
     ctx.fillStyle = 'white'
-    ctx.fillRect(0, 0, 150, 150)
     ctx.translate(75, 75)
     ctx.scale(0.4, 0.4)
     ctx.rotate(-Math.PI / 2)
-    ctx.strokeStyle = 'black'
+    ctx.strokeStyle = 'white'
     ctx.lineWidth = 8
     ctx.lineCap = 'round'
 
@@ -51,7 +50,7 @@ const drawClock = (canvas: Canvas) => {
     let hr = now.getHours()
     hr = hr >= 12 ? hr - 12 : hr
 
-    ctx.fillStyle = 'black'
+    ctx.fillStyle = 'white'
 
     // write Hours
     ctx.save()
@@ -104,20 +103,20 @@ const drawClock = (canvas: Canvas) => {
 }
 
 (async () => {
-    const ssd1331 = await Ssd1331.openDevice()
-    await ssd1331.init()
+    const ssd1306 = await Ssd1306.openDevice()
+    await ssd1306.init()
 
     process.once('SIGINT', () => {
         (async () => {
-            await ssd1331.close()
+            await ssd1306.close()
             process.exit()
         })()
     })
 
-    const canvas = createCanvas(ssd1331.width, ssd1331.height)
+    const canvas = createCanvas(ssd1306.width, ssd1306.height)
     while (true) {
         drawClock(canvas)
-        await ssd1331.draw(canvas.toBuffer('raw'))
+        await ssd1306.draw(canvas.toBuffer('raw'))
         await sleep(1000)
     }
 })()

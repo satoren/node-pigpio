@@ -71,7 +71,12 @@ const createDeviceInterface = (i2c: I2c): Promise<DeviceInterface> => {
         }
     }))
 }
-
+export interface Ssd1306OpenOption{
+    i2cOption?: I2COption | BBI2COption,
+    gpio?: Pigpio,
+    width?: number,
+    height?: number
+}
 export class Ssd1306 {
     private device: DeviceInterface;
     readonly width: number = defaultWidth;
@@ -86,14 +91,18 @@ export class Ssd1306 {
         this.height = height
     }
 
-    static async openDevice (
-        gpio?: Pigpio,
-        option: I2COption | BBI2COption = { bus: 1, address: 0x3c },
-        width: number = defaultWidth,
-        height: number = defaultHeight
+    static async openDevice (option?: Ssd1306OpenOption
     ): Promise<Ssd1306> {
+        const {
+            i2cOption = { bus: 1, address: 0x3c },
+            gpio,
+            width = defaultWidth,
+            height = defaultHeight
+        } = option ?? {}
         const gpioif = gpio ?? await defaultFactory.get()
-        return new Ssd1306(await createDeviceInterface(await gpioif.i2c(option)), width, height)
+        const display = new Ssd1306(await createDeviceInterface(await gpioif.i2c(i2cOption)), width, height)
+        await display.init()
+        return display
     }
 
     async init (): Promise<void> {
@@ -146,7 +155,7 @@ export class Ssd1306 {
     async draw (data: Buffer): Promise<void> {
         const bufferSize = (this.width * this.height) / 8
         if (data.length !== bufferSize) {
-            throw Error('Invalid buffer')
+            throw Error('Invalid buffer: Require A1 format')
         }
 
         const buffer = Buffer.alloc(bufferSize, 0)

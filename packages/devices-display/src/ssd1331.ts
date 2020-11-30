@@ -65,6 +65,15 @@ const createDeviceInterface = async (spi: Spi, dc: Gpio): Promise<DeviceInterfac
 }
 
 const sleep = (msec: number) => new Promise((resolve) => setTimeout(resolve, msec))
+
+export interface Ssd1331OpenOption{
+    spiOption?: SpiOption | BBSpiOption,
+    dc?: number,
+    rs?: number,
+    gpio?: Pigpio,
+    width?: typeof defaultWidth,
+    height?: typeof defaultHeight
+}
 export class Ssd1331 {
     private device: DeviceInterface;
     private rs: Gpio;
@@ -82,17 +91,21 @@ export class Ssd1331 {
         this.height = height
     }
 
-    static async openDevice (
-        gpio?: Pigpio,
-        spiOption: SpiOption | BBSpiOption = { channel: 0, baudRate: 32000000 },
-        dc = 24,
-        rs = 25,
-        width: typeof defaultWidth = defaultWidth,
-        height: typeof defaultHeight = defaultHeight
+    static async openDevice (option?:Ssd1331OpenOption
     ): Promise<Ssd1331> {
+        const {
+            spiOption = { channel: 0, baudRate: 32000000 },
+            dc = 24,
+            rs = 25,
+            gpio,
+            width = defaultWidth,
+            height = defaultHeight
+        } = option ?? {}
         const gpioif = gpio ?? await defaultFactory.get()
         const device = await createDeviceInterface(await gpioif.spi(spiOption), gpioif.gpio(dc))
-        return new Ssd1331(device, gpioif.gpio(rs), width, height)
+        const display = new Ssd1331(device, gpioif.gpio(rs), width, height)
+        await display.init()
+        return display
     }
 
     async init (): Promise<void> {
