@@ -8,8 +8,6 @@
     "build": "tsc",
     "test": "jest",
     "prepack": "rm -Rf ./dist && tsc",
-    "lint": "eslint \"src/**.ts\"",
-    "lint:fix": "eslint --fix \"src/**/*.ts\"",
     "coverage": "jest --coverage"
   },
   "publishConfig": {
@@ -31,5 +29,12 @@
     "type": "git",
     "url": "git+https://github.com/satoren/node-pigpio.git"
   },
-  "gitHead": "4e16d5c8c55e98620d674cae129f987f6e507844"
+  "gitHead": "4e16d5c8c55e98620d674cae129f987f6e507844",
+  "dependencies": {
+    "jsdom": "^16.4.0"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^16.2.5",
+    "jsdom": "^16.4.0"
+  }
 }

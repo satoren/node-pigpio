@@ -1,4 +1,3 @@
-
 import { AsyncTaskScheduler, CancelableTask, Sleepable } from '../AsyncTask'
 
 beforeEach(() => {

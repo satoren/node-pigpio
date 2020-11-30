@@ -4,3 +4,6 @@ dist
 .DS_Store
 .coverage
 coverage
+.eslintcache
+lerna-debug.log
+.vscode/

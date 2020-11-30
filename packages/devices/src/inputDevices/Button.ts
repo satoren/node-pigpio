@@ -1,7 +1,6 @@
 import { Pigpio, defaultFactory } from '@node-pigpio/highlevel'
 
-interface Button {
-
+export interface Button {
     waitForPress(timeout?: number): Promise<boolean>
     waitForRelease(timeout?: number): Promise<boolean>
     close(): Promise<void>

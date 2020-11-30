@@ -1,4 +1,4 @@
-import { Pigpio, BBI2COption, I2COption, I2c } from '@node-pigpio/highlevel'
+import { Pigpio, BBI2COption, I2COption, I2c, defaultFactory } from '@node-pigpio/highlevel'
 
 interface DeviceInterface {
     data(data: Buffer): Promise<void>;
@@ -58,8 +58,8 @@ const swapPage = (page: Buffer): Buffer => {
     return buffer
 }
 
-const createDeviceInterface = async (i2c: I2c): Promise<DeviceInterface> => {
-    return ({
+const createDeviceInterface = (i2c: I2c): Promise<DeviceInterface> => {
+    return new Promise<DeviceInterface>((resolve) => resolve({
         data: async (data:Buffer): Promise<void> => {
             await i2c.writeDevice(data)
         },
@@ -69,7 +69,7 @@ const createDeviceInterface = async (i2c: I2c): Promise<DeviceInterface> => {
         close: async ():Promise<void> => {
             await i2c.close()
         }
-    })
+    }))
 }
 
 export class Ssd1306 {
@@ -87,12 +87,13 @@ export class Ssd1306 {
     }
 
     static async openDevice (
-        gpio: Pigpio,
-        option: I2COption | BBI2COption,
+        gpio?: Pigpio,
+        option: I2COption | BBI2COption = { bus: 1, address: 0x3c },
         width: number = defaultWidth,
         height: number = defaultHeight
     ): Promise<Ssd1306> {
-        return new Ssd1306(await createDeviceInterface(await gpio.i2c(option)), width, height)
+        const gpioif = gpio ?? await defaultFactory.get()
+        return new Ssd1306(await createDeviceInterface(await gpioif.i2c(option)), width, height)
     }
 
     async init (): Promise<void> {
@@ -157,6 +158,8 @@ export class Ssd1306 {
         }
         await this.device.data(Buffer.from([0b01000000, ...buffer]))
     }
+
+    requireFormat = 'A1'
 
     async close (): Promise<void> {
         await this.device.close()

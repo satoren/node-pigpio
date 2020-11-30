@@ -33,7 +33,6 @@ class Callbacks {
     }
 }
 
-
 function edgeValue (n: GpioEdgeType) {
     switch (n) {
         case 'edge':

@@ -1,4 +1,4 @@
-import { Pigpio, BBSpiOption, SpiOption, Gpio, Spi } from '@node-pigpio/highlevel'
+import { Pigpio, BBSpiOption, SpiOption, Gpio, Spi, defaultFactory } from '@node-pigpio/highlevel'
 
 const defaultWidth = 96 as const
 const defaultHeight = 64 as const
@@ -83,15 +83,16 @@ export class Ssd1331 {
     }
 
     static async openDevice (
-        gpio: Pigpio,
-        spiOption: SpiOption | BBSpiOption,
+        gpio?: Pigpio,
+        spiOption: SpiOption | BBSpiOption = { channel: 0, baudRate: 32000000 },
         dc = 24,
         rs = 25,
         width: typeof defaultWidth = defaultWidth,
         height: typeof defaultHeight = defaultHeight
     ): Promise<Ssd1331> {
-        const device = await createDeviceInterface(await gpio.spi(spiOption), gpio.gpio(dc))
-        return new Ssd1331(device, gpio.gpio(rs), width, height)
+        const gpioif = gpio ?? await defaultFactory.get()
+        const device = await createDeviceInterface(await gpioif.spi(spiOption), gpioif.gpio(dc))
+        return new Ssd1331(device, gpioif.gpio(rs), width, height)
     }
 
     async init (): Promise<void> {
@@ -188,6 +189,8 @@ export class Ssd1331 {
             ...fillColor
         ]))
     }
+
+    requireFormat = 'RGB16_565'
 
     async close () : Promise<void> {
         await this.rs.close()

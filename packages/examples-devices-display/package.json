@@ -1,33 +1,36 @@
 {
-  "name": "@node-pigpio/util",
-  "version": "0.2.0",
+  "name": "@node-pigpio/examples-devices-display",
+  "version": "1.0.0",
   "description": "> TODO: description",
   "author": "satoren <satoreyo@hotmail.com>",
   "homepage": "https://github.com/satoren/node-pigpio#readme",
-  "license": "ISC",
-  "main": "dist/index.js",
+  "license": "MIT",
+  "main": "lib/examples-devices-display.js",
+  "private": true,
   "directories": {
-    "dist": "dist",
+    "lib": "lib",
     "test": "__tests__"
   },
   "files": [
-    "dist"
+    "lib"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/satoren/node-pigpio.git"
   },
   "scripts": {
     "build": "tsc",
-    "test": "jest",
+    "test": "",
     "prepack": "rm -Rf ./dist && tsc",
-    "coverage": "jest --coverage"
+    "lint": "eslint \"src/**.ts\"",
+    "lint:fix": "eslint --fix \"src/**/*.ts\"",
+    "coverage": ""
+  },
+  "dependencies": {
+    "@node-pigpio/devices-display": "^0.2.0",
+    "canvas": "^2.6.1"
   },
   "bugs": {
     "url": "https://github.com/satoren/node-pigpio/issues"
-  },
-  "gitHead": "4e16d5c8c55e98620d674cae129f987f6e507844"
+  }
 }
