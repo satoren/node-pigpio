@@ -1,7 +1,7 @@
 module.exports = {
     rootDir: '.',
     testMatch: [
-        '**/__tests__/**/*.+(ts|tsx|js)',
+        '**/__tests__/**/?(*.)+(spec|test).+(ts|tsx|js)',
         '**/?(*.)+(spec|test).+(ts|tsx|js)'
     ],
     transform: {
@@ -13,6 +13,7 @@ module.exports = {
     collectCoverageFrom: [
         '**/src/**/*.{js,jsx,ts,tsx}',
         '!**/node_modules/',
-        '!**/examples/**'
+        '!**/examples/**',
+        '!**/examples-*/**'
     ]
 }
