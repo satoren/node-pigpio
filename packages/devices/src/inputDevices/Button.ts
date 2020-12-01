@@ -8,7 +8,7 @@ export interface Button extends TypedEventTarget<{pressed: unknown, released: un
     readonly pin: number
 }
 
-export const Button = async (pin: number, pullUp = true, gpio: Pigpio | undefined = undefined): Promise<Button> => {
+export const Button = async (pin: number, pullUp = true, gpio?: Pigpio): Promise<Button> => {
     gpio = gpio ?? await defaultFactory.get()
     const p = gpio.gpio(pin)
     await p.setMode('INPUT')

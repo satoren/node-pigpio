@@ -31,6 +31,20 @@ class Callbacks {
     delete (edge: number, listener: (args: GpioEdgeEvent) => void): void {
         this.callbacks.get(listener)?.delete(edge)
     }
+
+    getAll (): pigpio.Event[] {
+        const ret: pigpio.Event[] = []
+        for (const m of this.callbacks.values()) {
+            for (const event of m.values()) {
+                ret.push(event)
+            }
+        }
+        return ret
+    }
+
+    deleteAll (): void {
+        this.callbacks.clear()
+    }
 }
 
 function edgeValue (n: GpioEdgeType) {
@@ -94,6 +108,13 @@ class GpioImpl implements Gpio {
         const c = this.callbacks.get(v, listener)
         c?.cancel()
         this.callbacks.delete(v, listener)
+    }
+
+    removeAllCallback () {
+        this.callbacks.getAll().forEach(e => {
+            e?.cancel()
+        })
+        this.callbacks.deleteAll()
     }
 
     async setServoPulsewidth (pulsewidth: number): Promise<void> {
@@ -179,6 +200,7 @@ class GpioImpl implements Gpio {
     }
 
     async close (): Promise<void> {
+        this.removeAllCallback()
         await this.closeEvent.emit()
     }
 }
