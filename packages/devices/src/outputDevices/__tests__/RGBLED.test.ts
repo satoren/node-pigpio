@@ -1,4 +1,4 @@
-import { buildSequence } from './RGBLED'
+import { buildSequence } from '../RGBLED'
 
 test('buildSequence', () => {
     const sequence = buildSequence({ onTime: 4, offTime: 5, onColor: { r: 1, g: 0, b: 0 }, offColor: { r: 0, g: 1, b: 0 }, fadeInTime: 2, fadeOutTime: 3, repeat: 2, fps: 1000 })

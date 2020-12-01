@@ -31,11 +31,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "jest",
-    "prepack": "rm -Rf ./dist && tsc",
-    "lint": "eslint \"src/**.ts\"",
-    "lint:fix": "eslint --fix \"src/**/*.ts\"",
-    "coverage": "jest --coverage"
+    "prepack": "rm -Rf ./dist && tsc"
   },
   "bugs": {
     "url": "https://github.com/satoren/node-pigpio/issues"

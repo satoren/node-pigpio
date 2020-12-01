@@ -27,11 +27,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "jest",
-    "prepack": "rm -Rf ./dist && tsc",
-    "lint": "eslint \"src/**.ts\"",
-    "lint:fix": "eslint --fix \"src/**/*.ts\"",
-    "coverage": "jest --coverage"
+    "prepack": "rm -Rf ./dist && tsc"
   },
   "dependencies": {
     "@node-pigpio/highlevel": "^0.2.1"
