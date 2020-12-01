@@ -2,7 +2,6 @@
 
 `@node-pigpio/devices-display` provides a node.js interface OLED displays with the SSD1306 or SSD1331.
 
-
 ## Usage
 
 ```

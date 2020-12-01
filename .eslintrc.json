@@ -5,6 +5,7 @@
   },
   "extends": [
     "standard",
+    "prettier",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking"
   ],
@@ -14,10 +15,7 @@
     "sourceType": "module",
     "project": ["./tsconfig.json", "./packages/*/tsconfig.json"]
   },
-  "plugins": [
-    "@typescript-eslint",
-    "eslint-plugin-tsdoc"
-  ],
+  "plugins": ["@typescript-eslint", "eslint-plugin-tsdoc"],
   "rules": {
     "@typescript-eslint/no-floating-promises": [
       "error",
@@ -30,10 +28,6 @@
       {
         "allowAsStatement": true
       }
-    ],
-    "indent": "off",
-    "@typescript-eslint/indent": [
-      "error"
     ],
     "tsdoc/syntax": "warn"
   }

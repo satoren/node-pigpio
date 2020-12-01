@@ -1,18 +1,22 @@
-import { AsyncTaskScheduler, CancelableTask, Sleepable } from '@node-pigpio/util'
+import {
+  AsyncTaskScheduler,
+  CancelableTask,
+  Sleepable,
+} from '@node-pigpio/util'
 test('stop task', async () => {
-    const task = new AsyncTaskScheduler()
+  const task = new AsyncTaskScheduler()
 
-    const cancel = jest.fn()
-    const t: CancelableTask = Sleepable((sleep) => () => ({
-        promise: sleep(1000),
-        cancel
-    }))
+  const cancel = jest.fn()
+  const t: CancelableTask = Sleepable((sleep) => () => ({
+    promise: sleep(1000),
+    cancel,
+  }))
 
-    const started = task.start(t)
-    expect(task.running()).toBe(true)
-    task.stop()
+  const started = task.start(t)
+  expect(task.running()).toBe(true)
+  task.stop()
 
-    expect(cancel).toBeCalled()
-    expect(task.running()).toBe(false)
-    await expect(started).rejects.toThrow()
+  expect(cancel).toBeCalled()
+  expect(task.running()).toBe(false)
+  await expect(started).rejects.toThrow()
 })

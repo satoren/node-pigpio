@@ -1,40 +1,42 @@
 # @node-pigpio/
+
 pigpiod socket interface for node.js
 
 [![Coverage Status](https://coveralls.io/repos/github/satoren/node-pigpio/badge.svg?branch=main)](https://coveralls.io/github/satoren/node-pigpio?branch=main)
 
 ## Features
-* Can run gpio program on Windows/Mac/Linux with remote gpio by pigpiod
-* high level wrappers api for for I2C, SPI, Bit banging I2C
-* Contains a lowlevel api with the same features as the original [python library](http://abyz.me.uk/rpi/pigpio/python.html)
 
+- Can run gpio program on Windows/Mac/Linux with remote gpio by pigpiod
+- high level wrappers api for for I2C, SPI, Bit banging I2C
+- Contains a lowlevel api with the same features as the original [python library](http://abyz.me.uk/rpi/pigpio/python.html)
 
 ## Requirements
-* Node 12.x or later
-* install and run pigopid
-http://abyz.me.uk/rpi/pigpio/download.html
 
+- Node 12.x or later
+- install and run pigopid
+  http://abyz.me.uk/rpi/pigpio/download.html
 
 ## Install
+
 ```
 npm install @node-pigpio/core
 ```
 
 ## Usage
+
 ```ts
 import { outputDevices, usingAsync } from '@node-pigpio/devices'
 
 import LED = outputDevices.LED
-
-(async () => {
-    await usingAsync(await LED(22, false), async (led) => {
-        await led.blink({ onTime: 1000, offTime: 1000, repeat: 5 })
-    })
+;(async () => {
+  await usingAsync(await LED(22, false), async (led) => {
+    await led.blink({ onTime: 1000, offTime: 1000, repeat: 5 })
+  })
 })()
-
 ```
 
 ### lowlevel api
+
 lowlevel API is the same feature as the original [python library](http://abyz.me.uk/rpi/pigpio/python.html) except that all requests are asynchronous.
 
 ```ts
