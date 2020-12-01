@@ -1,4 +1,4 @@
-# @node-pigpio/
+# @node-pigpio
 
 pigpiod socket interface for node.js
 
@@ -16,13 +16,11 @@ pigpiod socket interface for node.js
 - install and run pigopid
   http://abyz.me.uk/rpi/pigpio/download.html
 
-## Install
-
-```
-npm install @node-pigpio/core
-```
 
 ## Usage
+```
+npm install @node-pigpio/devices
+```
 
 ```ts
 import { outputDevices, usingAsync } from '@node-pigpio/devices'
@@ -37,6 +35,10 @@ import LED = outputDevices.LED
 
 ### lowlevel api
 
+
+```
+npm install @node-pigpio/core
+```
 lowlevel API is the same feature as the original [python library](http://abyz.me.uk/rpi/pigpio/python.html) except that all requests are asynchronous.
 
 ```ts
