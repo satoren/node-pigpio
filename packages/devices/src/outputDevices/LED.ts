@@ -6,7 +6,7 @@ import {
   CanceledError,
 } from '@node-pigpio/util'
 
-interface BlinkOption {
+export interface BlinkOption {
   onTime?: number
   offTime?: number
   repeat?: number
@@ -73,10 +73,8 @@ export const LED = async (
                 if (canceled) {
                   return
                 }
-                await on()
-                await sleep(onTime)
-                await off()
-                await sleep(offTime)
+                await Promise.all([on(), sleep(onTime)])
+                await Promise.all([off(), sleep(offTime)])
                 repeat -= 1
               }
               resolve()

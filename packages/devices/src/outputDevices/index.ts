@@ -1,3 +1,3 @@
-export * from './LED'
-export * from './PWMLED'
-export * from './RGBLED'
+export { LED } from './LED'
+export { PWMLED } from './PWMLED'
+export { RGBLED } from './RGBLED'

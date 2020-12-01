@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { createGpio } from '@node-pigpio/highlevel/src/gpio'
+import { createGpio } from '../gpio'
 
 import * as pigpio from '@node-pigpio/core'
 
@@ -72,6 +72,7 @@ test('on edge', () => {
 
   expect(mockedPigpio.callback).toBeCalledWith(3, 0, expect.anything())
   expect(mockedPigpio.callback).toBeCalledWith(3, 1, expect.anything())
+  gpio.close()
 })
 test('once edge', () => {
   const gpio = createGpio(2, mockedPigpio)
@@ -278,4 +279,14 @@ test('getPWMRealRange', async () => {
   const r = await gpio.getPWMRealRange()
   expect(mockedPigpio.get_PWM_real_range).toBeCalledWith(3)
   expect(r).toBe(333)
+})
+
+test('waitForEdge', async () => {
+  const gpio = createGpio(3, mockedPigpio)
+  await gpio.waitForEdge('risingEdge', 4)
+  expect(mockedPigpio.wait_for_edge).toBeCalledWith(3, 0, 4)
+  await gpio.waitForEdge('fallingEdge', 4)
+  expect(mockedPigpio.wait_for_edge).toBeCalledWith(3, 1, 4)
+  await gpio.waitForEdge('edge', 4)
+  expect(mockedPigpio.wait_for_edge).toBeCalledWith(3, 2, 4)
 })

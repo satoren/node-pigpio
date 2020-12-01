@@ -1,4 +1,4 @@
-import { CCS811 } from '../CCS811'
+import { CCS811 } from '../'
 import { I2c, I2cZipCommand } from '@node-pigpio/highlevel'
 import { once } from 'events'
 import { MonoTypedEventEmitter } from '@node-pigpio/util'

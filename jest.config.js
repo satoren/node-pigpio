@@ -13,6 +13,8 @@ module.exports = {
   collectCoverageFrom: [
     '**/src/**/*.{js,jsx,ts,tsx}',
     '!**/node_modules/',
+    '!**/__tests__/**',
+    '!**/__mocks__/**',
     '!**/examples/**',
     '!**/examples-*/**',
   ],

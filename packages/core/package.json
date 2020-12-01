@@ -28,8 +28,7 @@
     "url": "git+https://github.com/satoren/node-pigpio.git"
   },
   "gitHead": "4e16d5c8c55e98620d674cae129f987f6e507844",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/jsdom": "^16.2.5",
     "jsdom": "^16.4.0"

@@ -509,3 +509,36 @@ describe('bb i2c', () => {
     })
   })
 })
+
+describe('wave', () => {
+  test('wave_clear', async () => {
+    await pi.wave_clear()
+    expect(mockRequestSocket.request).toBeCalledWith({
+      cmd: RequestCommand.WVCLR.cmdNo,
+      p1: 0,
+      p2: 0,
+      responseExtension: false,
+    })
+  })
+
+  test('wave_add_new', async () => {
+    await pi.wave_add_new()
+    expect(mockRequestSocket.request).toBeCalledWith({
+      cmd: RequestCommand.WVNEW.cmdNo,
+      p1: 0,
+      p2: 0,
+      responseExtension: false,
+    })
+  })
+  test('wave_add_generic', async () => {
+    await pi.wave_add_generic([{ gpio_off: 0x43, gpio_on: 0x21, delay: 10 }])
+    const extension = Buffer.from([33, 0, 0, 0, 67, 0, 0, 0, 10, 0, 0, 0])
+    expect(mockRequestSocket.request).toBeCalledWith({
+      cmd: RequestCommand.WVAG.cmdNo,
+      p1: 0,
+      p2: 0,
+      extension,
+      responseExtension: false,
+    })
+  })
+})

@@ -56,6 +56,19 @@ test('read', async () => {
   expect(mockedRead).toBeCalledWith(99, 33)
   expect(readData).toMatchObject(responseData)
 })
+test('read with error', async () => {
+  const spihandle = 99
+  const mockedOpen = mockedPigpio.spi_open as jest.Mock
+  mockedOpen.mockResolvedValueOnce(spihandle)
+  const spi = await spiFactory.create(channel, baudrate, flags)
+
+  const mockedRead = mockedPigpio.spi_read as jest.Mock
+  mockedRead.mockResolvedValueOnce([0, Buffer.alloc(0)])
+  await expect(spi.readDevice(33)).rejects.toThrow(
+    'Cant readDevice: Unknown reason'
+  )
+  await expect(spi.readDevice(-1)).rejects.toThrow('Invalid Argument')
+})
 
 test('xfer', async () => {
   const spihandle = 99
@@ -70,4 +83,26 @@ test('xfer', async () => {
   const readData = await spi.xferDevice(writeData)
   expect(mockedXfer).toBeCalledWith(99, writeData)
   expect(readData).toMatchObject(responseData)
+
+  await expect(spi.xferDevice(Buffer.alloc(0))).rejects.toThrow(
+    'Invalid Argument'
+  )
+})
+
+test('invalid handle', async () => {
+  const spihandle = 99
+
+  const mockedOpen = mockedPigpio.spi_open as jest.Mock
+  mockedOpen.mockResolvedValueOnce(spihandle)
+
+  const spi = await spiFactory.create(channel, baudrate, flags)
+  await spi.close()
+  await expect(spi.writeDevice(Buffer.from([23]))).rejects.toThrow(
+    'Invalid Handle'
+  )
+  await expect(spi.xferDevice(Buffer.from([23]))).rejects.toThrow(
+    'Invalid Handle'
+  )
+  await expect(spi.readDevice(21)).rejects.toThrow('Invalid Handle')
+  await expect(spi.close()).rejects.toThrow('Invalid Handle')
 })

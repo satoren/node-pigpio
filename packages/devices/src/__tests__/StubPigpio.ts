@@ -158,5 +158,5 @@ export class StubGpio implements Gpio {
     throw new Error('Method not implemented.')
   }
   readonly closeEvent = new MonoTypedEventEmitter<void>()
-  readonly pin = 0
+  constructor(readonly pin: number) {}
 }

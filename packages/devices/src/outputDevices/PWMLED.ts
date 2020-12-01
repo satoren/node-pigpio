@@ -9,17 +9,19 @@ import {
   CanceledError,
 } from '@node-pigpio/util'
 
-interface BlinkOption {
+export interface BlinkOption {
   onTime?: number
   offTime?: number
   fadeInTime?: number
   fadeOutTime?: number
   repeat?: number
+  fps?: number
 }
-interface PulseOption {
+export interface PulseOption {
   fadeInTime?: number
   fadeOutTime?: number
   repeat?: number
+  fps?: number
 }
 
 export interface PWMLED extends LED {
@@ -37,8 +39,8 @@ const buildSequence = ({
   offTime,
   fadeInTime,
   fadeOutTime,
-  fps = 30,
-}: Required<BlinkOption> & { fps?: number }): {
+  fps,
+}: Required<BlinkOption>): {
   value: number
   delay: number
 }[] => {
@@ -53,9 +55,9 @@ const buildSequence = ({
     sequence.push({ value: 1, delay: onTime })
   }
   if (fadeOutTime > 0) {
-    const fadein = (fadeOutTime * fps) / 1000
-    for (let i = 0; i < fadein; i += 1) {
-      sequence.push({ value: lerp(1, 0, i / fadein), delay: 1000 / fps })
+    const fadeout = (fadeOutTime * fps) / 1000
+    for (let i = 0; i < fadeout; i += 1) {
+      sequence.push({ value: lerp(1, 0, i / fadeout), delay: 1000 / fps })
     }
   }
   if (offTime > 0) {
@@ -114,6 +116,7 @@ export const PWMLED = async (
     offTime = 1000,
     fadeInTime = 0,
     fadeOutTime = 0,
+    fps = 30,
     repeat = Infinity,
   }: BlinkOption): Promise<void> => {
     const blinkTask: CancelableTask = Sleepable(
@@ -133,14 +136,11 @@ export const PWMLED = async (
                 fadeInTime,
                 fadeOutTime,
                 repeat,
+                fps,
               })
               while (repeat > 0) {
                 for (const seq of sequence) {
-                  await setValue(seq.value)
-                  if (canceled) {
-                    return
-                  }
-                  await sleep(onTime)
+                  await Promise.all([setValue(seq.value), sleep(seq.delay)])
                   if (canceled) {
                     return
                   }

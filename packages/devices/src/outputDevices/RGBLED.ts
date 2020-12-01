@@ -30,21 +30,22 @@ interface BlinkOption {
   onColor?: Color
   offColor?: Color
   repeat?: number
+  fps?: number
 }
 
 const lerp = (from: number, to: number, per: number) => {
   return (to - from) * per + from
 }
 
-export const buildSequence = ({
+const buildSequence = ({
   onTime,
   offTime,
   fadeInTime,
   fadeOutTime,
   onColor,
   offColor,
-  fps = 30,
-}: Required<BlinkOption> & { fps?: number }): {
+  fps,
+}: Required<BlinkOption>): {
   value: Color
   delay: number
 }[] => {
@@ -86,14 +87,15 @@ export const buildSequence = ({
   return sequence
 }
 
-interface PulseOption {
+export interface PulseOption {
   fadeInTime?: number
   fadeOutTime?: number
   onColor?: Color
   offColor?: Color
   repeat?: number
+  fps?: number
 }
-interface RGBLED {
+export interface RGBLED {
   on(): Promise<void>
   off(): Promise<void>
   toggle(): Promise<void>
@@ -164,6 +166,7 @@ export const RGBLED = async (
     onColor = { r: 1, g: 1, b: 1 },
     offColor = { r: 0, g: 0, b: 0 },
     repeat = Infinity,
+    fps = 30,
   }: BlinkOption): Promise<void> => {
     const blinkTask: CancelableTask = Sleepable(
       (sleep): CancelableTask => () => {
@@ -184,14 +187,11 @@ export const RGBLED = async (
                 offColor,
                 onColor,
                 repeat,
+                fps,
               })
               while (repeat > 0) {
                 for (const seq of sequence) {
-                  await setValue(seq.value)
-                  if (canceled) {
-                    return
-                  }
-                  await sleep(onTime)
+                  await Promise.all([setValue(seq.value), sleep(seq.delay)])
                   if (canceled) {
                     return
                   }

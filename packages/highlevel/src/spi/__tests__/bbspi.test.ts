@@ -47,4 +47,17 @@ test('read', async () => {
   const readData = await spi.readDevice(responseData.length)
   expect(mockedXfer).toBeCalledWith(3, Buffer.alloc(10))
   expect(readData).toMatchObject(responseData)
+  await expect(spi.readDevice(0)).rejects.toThrow('Invalid Argument')
+})
+
+test('read 0', async () => {
+  const mockedPigpio = await pigpio.pi()
+  const spiFactory = new BBSpiFactory(mockedPigpio)
+  const spi = await spiFactory.create(cs, miso, mosi, sclk, baudrate, flags)
+  const mockedXfer = mockedPigpio.bb_spi_xfer as jest.Mock
+  const responseData = Buffer.of()
+  mockedXfer.mockResolvedValueOnce([responseData.length, undefined])
+  await expect(spi.readDevice(32)).rejects.toThrow(
+    'Cant readDevice: Unknown reason'
+  )
 })
