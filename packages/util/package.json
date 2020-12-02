@@ -1,7 +1,7 @@
 {
   "name": "@node-pigpio/util",
   "version": "0.2.1",
-  "description": "> TODO: description",
+  "description": "",
   "author": "satoren <satoreyo@hotmail.com>",
   "homepage": "https://github.com/satoren/node-pigpio#readme",
   "license": "ISC",
@@ -18,7 +18,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/satoren/node-pigpio.git"
+    "url": "git+https://github.com/satoren/node-pigpio.git",
+    "directory": "packages/util"
   },
   "scripts": {
     "build": "tsc",

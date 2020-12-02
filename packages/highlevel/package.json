@@ -25,7 +25,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/satoren/node-pigpio.git"
+    "url": "git+https://github.com/satoren/node-pigpio.git",
+    "directory": "packages/highlevel"
   },
   "scripts": {
     "build": "tsc",

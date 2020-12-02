@@ -23,7 +23,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/satoren/node-pigpio.git"
+    "url": "git+https://github.com/satoren/node-pigpio.git",
+    "directory": "packages/devices-sensor"
   },
   "scripts": {
     "build": "tsc",
