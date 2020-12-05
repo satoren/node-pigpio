@@ -210,6 +210,7 @@ export const CCS811 = async (option?: Option): Promise<CCS811> => {
     }
 
     close() {
+      this.stop()
       return i2c.close()
     }
 
@@ -244,7 +245,7 @@ export const CCS811 = async (option?: Option): Promise<CCS811> => {
 
       await i2c.writeDevice(Buffer.from([RegisterAddress.APP_START]))
       await this.checkForError()
-      await this.setDriveMode('Every250MilliSeconds')
+      await this.setDriveMode('EverySecond')
 
       if (this.listenerCount('data') > 0 && !task.running()) {
         this.start().catch((err) => this.emit(err))
