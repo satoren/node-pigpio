@@ -1,6 +1,6 @@
 {
   "name": "@node-pigpio/devices-display",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "display drivers for raspberry pi",
   "author": "satoren <satoreyo@hotmail.com>",
   "homepage": "https://github.com/satoren/node-pigpio.git",
@@ -14,7 +14,7 @@
     "dist"
   ],
   "dependencies": {
-    "@node-pigpio/highlevel": "^0.2.1"
+    "@node-pigpio/highlevel": "^0.2.2"
   },
   "publishConfig": {
     "access": "public"

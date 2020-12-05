@@ -1,6 +1,6 @@
 {
   "name": "@node-pigpio/core",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "pigpiod client for node.js",
   "main": "dist/pigpio.js",
   "types": "dist/pigpio.d.ts",
@@ -29,7 +29,6 @@
     "directory": "packages/core"
   },
   "gitHead": "4e16d5c8c55e98620d674cae129f987f6e507844",
-  "dependencies": {},
   "devDependencies": {
     "@types/jsdom": "^16.2.5",
     "jsdom": "^16.4.0"

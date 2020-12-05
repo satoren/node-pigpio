@@ -1,6 +1,6 @@
 {
   "name": "@node-pigpio/highlevel",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "highlevel api pigpiod client for node.js",
   "author": "satoren <satoreyo@hotmail.com>",
   "homepage": "https://github.com/satoren/node-pigpio",
@@ -36,8 +36,8 @@
     "url": "https://github.com/satoren/node-pigpio/issues"
   },
   "dependencies": {
-    "@node-pigpio/core": "^0.2.1",
-    "@node-pigpio/util": "^0.2.1"
+    "@node-pigpio/core": "^0.2.2",
+    "@node-pigpio/util": "^0.2.2"
   },
   "gitHead": "4e16d5c8c55e98620d674cae129f987f6e507844"
 }
