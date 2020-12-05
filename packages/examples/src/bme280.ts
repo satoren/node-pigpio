@@ -1,5 +1,5 @@
-import {once} from 'events'
 import { BME280 } from '@node-pigpio/devices-sensor'
+
 ;(async () => {
   const bme280 = await BME280()
 

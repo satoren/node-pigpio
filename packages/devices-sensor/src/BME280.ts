@@ -485,10 +485,10 @@ export const BME280 = async (option?: Option): Promise<BME280> => {
       if (tfine == null) {
         return
       }
-      
+
       const newTemp = tfine / 5120
-      const newPressure = await readPressure(tfine) ?? pressure
-      const newHumidity = await readHumidity(tfine) ?? humidity
+      const newPressure = (await readPressure(tfine)) ?? pressure
+      const newHumidity = (await readHumidity(tfine)) ?? humidity
       if (
         temperature !== newTemp ||
         pressure !== newPressure ||
