@@ -1,6 +1,6 @@
 {
   "name": "node-pigpio-example",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "examples for node-pigpio",
   "main": "index.js",
   "private": true,
