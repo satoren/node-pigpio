@@ -1,6 +1,6 @@
 {
   "name": "@node-pigpio/highlevel",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "highlevel api pigpiod client for node.js",
   "author": "satoren <satoreyo@hotmail.com>",
   "homepage": "https://github.com/satoren/node-pigpio",
