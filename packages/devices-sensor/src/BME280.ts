@@ -121,14 +121,14 @@ export interface BME280
 
   [Symbol.asyncIterator](): AsyncIterator<MeasureData>
 }
-const openI2c = async (ic2option: I2COption | BBI2COption, gpio?: Pigpio) => {
-  return await (gpio ?? (await defaultFactory.get())).i2c(ic2option)
+const openI2c = async (i2cOption: I2COption | BBI2COption, gpio?: Pigpio) => {
+  return await (gpio ?? (await defaultFactory.get())).i2c(i2cOption)
 }
 
-type Option = { ic2option?: I2COption | BBI2COption; gpio?: Pigpio; i2c?: I2c }
+type Option = { i2cOption?: I2COption | BBI2COption; gpio?: Pigpio; i2c?: I2c }
 export const BME280 = async (option?: Option): Promise<BME280> => {
-  const { ic2option = { address: defaultAddress, bus: 1 }, gpio } = option ?? {}
-  const i2c = option?.i2c ?? (await openI2c(ic2option, gpio))
+  const { i2cOption = { address: defaultAddress, bus: 1 }, gpio } = option ?? {}
+  const i2c = option?.i2c ?? (await openI2c(i2cOption, gpio))
 
   const readByte = async (cmd: RegisterAddress): Promise<number> => {
     const [[data]] = await i2c.zip(

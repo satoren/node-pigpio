@@ -1,6 +1,5 @@
 # `@node-pigpio/highlevel`
 
-
 ## Usage
 
 ```

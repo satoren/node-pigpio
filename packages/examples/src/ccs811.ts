@@ -1,7 +1,7 @@
 import { CCS811 } from '@node-pigpio/devices-sensor'
 ;(async () => {
   const bbi2c = {
-    ic2option: { sda: 22, scl: 27, address: 0x5a, baudRate: 115200 },
+    i2cOption: { sda: 22, scl: 27, address: 0x5a, baudRate: 115200 },
   }
   const ccs811 = await CCS811(bbi2c)
   process.once('SIGINT', () => {

@@ -12,7 +12,8 @@
   "license": "ISC",
   "main": "dist/index.js",
   "directories": {
-    "dist": "dist",
+    "lib": "dist",
+    "doc": "doc",
     "test": "__tests__"
   },
   "files": [

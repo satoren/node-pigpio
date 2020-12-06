@@ -1,6 +1,6 @@
 import { BME280 } from '@node-pigpio/devices-sensor'
 ;(async () => {
-  const bme280 = await BME280()
+  const bme280 = await BME280({ i2cOption: { bus: 1, address: 0x77 } })
 
   process.once('SIGINT', () => {
     void bme280.close()
