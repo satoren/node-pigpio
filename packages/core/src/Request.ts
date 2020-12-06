@@ -1,5 +1,4 @@
 import net from 'net'
-import { on } from 'events'
 
 export interface RequestParam {
   cmd: number
@@ -63,26 +62,41 @@ async function execRequest(
   }
 
   let data: Buffer = Buffer.alloc(0)
-  for await (const [chunk] of on(sock, 'data')) {
-    data = Buffer.concat([data, chunk as Buffer])
-    const response = fromBuffer(data)
-    if (response) {
-      if (
-        request.cmd !== response.cmd ||
-        request.p1 !== response.p1 ||
-        request.p2 !== response.p2
-      ) {
-        throw new Error('Invalid Response')
-      }
-      // Check extension received
-      if (
-        !request.responseExtension ||
-        response.res === (response.extension?.length ?? 0)
-      ) {
-        return response
+  let eventOff: () => void
+  return new Promise<ResponseParam>((resolve, reject) => {
+    const dataListener = (chunk: Buffer) => {
+      data = Buffer.concat([data, chunk])
+      const response = fromBuffer(data)
+      if (response) {
+        if (
+          request.cmd !== response.cmd ||
+          request.p1 !== response.p1 ||
+          request.p2 !== response.p2
+        ) {
+          reject(new Error('Invalid Response'))
+        }
+        // Check extension received
+        if (
+          !request.responseExtension ||
+          response.res === (response.extension?.length ?? 0)
+        ) {
+          resolve(response)
+        }
       }
     }
-  }
+    const errorListener = (error: Error) => {
+      reject(error)
+    }
+    eventOff = () => {
+      sock.off('data', dataListener)
+      sock.off('error', errorListener)
+    }
+
+    sock.on('data', dataListener)
+    sock.on('error', errorListener)
+  }).finally(() => {
+    eventOff()
+  })
   throw new Error('Invalid Response2')
 }
 

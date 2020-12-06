@@ -4,6 +4,10 @@ const copy = (image: ImageData): ImageData => {
   return { ...image, data: new Uint8ClampedArray(image.data) }
 }
 
+const flat = <T>(a: T[][]): T[] => {
+  return ([] as T[]).concat(...a)
+}
+
 export const grayscale = (image: ImageData): ImageData => {
   if (image.format === 'A8') {
     return copy(image)
@@ -115,9 +119,13 @@ export const toRGBA32 = (
 ): ImageData => {
   switch (image.format) {
     case 'A1': {
-      const rgbadata = Array.from(image.data).flatMap((e) =>
-        Array.from({ length: 8 }, (_, k) => k).flatMap((k) =>
-          (e >> k) & 0x1 ? [255, 255, 255, 255] : [0, 0, 0, 255]
+      const rgbadata = flat(
+        Array.from(image.data).map((e) =>
+          flat(
+            Array.from({ length: 8 }, (_, k) => k).map((k) =>
+              (e >> k) & 0x1 ? [255, 255, 255, 255] : [0, 0, 0, 255]
+            )
+          )
         )
       )
       return {
@@ -127,7 +135,7 @@ export const toRGBA32 = (
       }
     }
     case 'A8': {
-      const rgbadata = Array.from(image.data).flatMap((e) => [e, e, e, 255])
+      const rgbadata = flat(Array.from(image.data).map((e) => [e, e, e, 255]))
       return {
         data: new Uint8ClampedArray(rgbadata),
         width: image.width,

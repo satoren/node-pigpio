@@ -1,5 +1,9 @@
 import { grayscale, dithering, toRGBA32 } from '../grayscale'
 
+const flat = <T>(a: T[][]): T[] => {
+  return ([] as T[]).concat(...a)
+}
+
 describe('grayscale', () => {
   test('minimal white', async () => {
     const d = grayscale({
@@ -93,7 +97,7 @@ describe('A8toRGBA32', () => {
       width: 4,
       height: 2,
       data: new Uint8ClampedArray(
-        Array.from({ length: 2 * 4 }).flatMap(() => [0, 0, 0, 0xff])
+        flat(Array.from({ length: 2 * 4 }).map(() => [0, 0, 0, 0xff]))
       ),
     })
   })
@@ -126,7 +130,7 @@ describe('A1toRGBA32', () => {
       width: 4,
       height: 2,
       data: new Uint8ClampedArray(
-        Array.from({ length: 2 * 4 }).flatMap(() => [0, 0, 0, 0xff])
+        flat(Array.from({ length: 2 * 4 }).map(() => [0, 0, 0, 0xff]))
       ),
     })
   })
