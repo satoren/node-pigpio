@@ -6,6 +6,8 @@ import {
   Spi,
   defaultFactory,
 } from '@node-pigpio/highlevel'
+import { toRGB565 } from './ImageUtil/rgb565'
+import { isImageData, ImageData } from './type'
 
 const defaultWidth = 96 as const
 const defaultHeight = 64 as const
@@ -196,7 +198,14 @@ export class Ssd1331 {
     )
   }
 
-  async draw(data: Buffer): Promise<void> {
+  async draw(data: Buffer | ImageData): Promise<void> {
+    if (isImageData(data)) {
+      if (data.format !== 'RGB16_565') {
+        data = Buffer.from(toRGB565(data).data)
+      } else {
+        data = Buffer.from(data.data)
+      }
+    }
     const bufferSize = this.width * this.height * 2
     if (data.length !== bufferSize) {
       throw Error('Invalid buffer')

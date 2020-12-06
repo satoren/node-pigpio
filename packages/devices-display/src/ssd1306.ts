@@ -6,6 +6,9 @@ import {
   defaultFactory,
 } from '@node-pigpio/highlevel'
 
+import { dithering } from './ImageUtil/grayscale'
+import { isImageData, ImageData } from './type'
+
 interface DeviceInterface {
   data(data: Buffer): Promise<void>
   command(data: Buffer): Promise<void>
@@ -174,7 +177,15 @@ export class Ssd1306 {
     )
   }
 
-  async draw(data: Buffer): Promise<void> {
+  async draw(data: Buffer | ImageData): Promise<void> {
+    if (isImageData(data)) {
+      if (data.format !== 'A1') {
+        data = Buffer.from(dithering(data).data)
+      } else {
+        data = Buffer.from(data.data)
+      }
+    }
+
     const bufferSize = (this.width * this.height) / 8
     if (data.length !== bufferSize) {
       throw Error('Invalid buffer: Require A1 format')

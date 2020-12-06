@@ -1,11 +1,13 @@
-import { createCanvas } from 'canvas'
 import { Ssd1331 } from '@node-pigpio/devices-display'
+import { init as CanvasKitInit } from './canvaskit-node-support'
 import { drawClock } from './draw-clock'
 
 const sleep = (msec: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, msec))
 }
+
 ;(async () => {
+  const canvasKit = await CanvasKitInit()
   const ssd1331 = await Ssd1331.openDevice()
   await ssd1331.init()
 
@@ -18,11 +20,16 @@ const sleep = (msec: number): Promise<void> => {
       })
   })
 
-  const canvas = createCanvas(ssd1331.width, ssd1331.height)
-  const ctx = canvas.getContext('2d', { pixelFormat: 'RGB16_565' })
+  const canvas = canvasKit.MakeCanvas(ssd1331.width, ssd1331.height)
+  const ctx = canvas.getContext('2d')
+  if (!ctx) {
+    return
+  }
+
   while (true) {
     drawClock(ctx)
-    await ssd1331.draw(canvas.toBuffer('raw'))
+    const image = ctx.getImageData(0, 0, ssd1331.width, ssd1331.height)
+    await ssd1331.draw(image)
     await sleep(1000)
   }
 })()

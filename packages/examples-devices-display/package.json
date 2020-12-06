@@ -26,7 +26,8 @@
   },
   "dependencies": {
     "@node-pigpio/devices-display": "^0.2.3",
-    "canvas": "^2.6.1"
+    "canvas": "^2.6.1",
+    "canvaskit-wasm": "^0.20.0"
   },
   "bugs": {
     "url": "https://github.com/satoren/node-pigpio/issues"
