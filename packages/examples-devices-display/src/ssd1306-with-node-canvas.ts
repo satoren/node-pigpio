@@ -20,10 +20,11 @@ const sleep = (msec: number): Promise<void> => {
   })
 
   const canvas = createCanvas(ssd1306.width, ssd1306.height)
-  const ctx = canvas.getContext('2d', { pixelFormat: 'A1' })
+  const ctx = canvas.getContext('2d')
   while (true) {
     drawClock(ctx)
-    await ssd1306.draw(canvas.toBuffer('raw'))
+    const image = ctx.getImageData(0, 0, ssd1306.width, ssd1306.height)
+    await ssd1306.draw(image)
     await sleep(1000)
   }
 })()

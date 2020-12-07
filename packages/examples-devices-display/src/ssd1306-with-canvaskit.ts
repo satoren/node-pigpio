@@ -29,7 +29,7 @@ const sleep = (msec: number): Promise<void> => {
   while (true) {
     drawClock(ctx)
     const image = ctx.getImageData(0, 0, ssd1306.width, ssd1306.height)
-    await ssd1306.draw(ImageUtil.thresholding(image, 50))
+    await ssd1306.draw(ImageUtil.dithering(image))
     await sleep(1000)
   }
 })()
