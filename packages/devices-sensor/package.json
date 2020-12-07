@@ -1,6 +1,6 @@
 {
   "name": "@node-pigpio/devices-sensor",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Sensor drivers for raspberry pi",
   "keywords": [
     "raspberrypi",
@@ -32,7 +32,7 @@
     "prepack": "rm -Rf ./dist && tsc"
   },
   "dependencies": {
-    "@node-pigpio/highlevel": "^0.2.3"
+    "@node-pigpio/highlevel": "^0.2.4"
   },
   "bugs": {
     "url": "https://github.com/satoren/node-pigpio/issues"
