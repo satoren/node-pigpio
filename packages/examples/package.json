@@ -1,14 +1,13 @@
 {
-  "name": "node-pigpio-example",
+  "name": "@node-pigpio/example",
   "version": "0.2.7",
   "description": "examples for node-pigpio",
   "main": "index.js",
   "private": true,
   "scripts": {
     "build": "tsc",
-    "test": "",
-    "prepack": "rm -Rf ./dist && tsc",
-    "coverage": ""
+    "clean": "rm -Rf ./dist",
+    "prepack": "run-s clean build"
   },
   "author": "",
   "license": "ISC",

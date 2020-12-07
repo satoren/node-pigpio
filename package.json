@@ -6,6 +6,7 @@
   ],
   "scripts": {
     "bootstrap": "npm install lerna && lerna bootstrap && npm install",
+    "clean": "lerna run clean",
     "build": "lerna run build",
     "test": "jest",
     "lint:eslint": "eslint . --cache --ext ts",

@@ -29,7 +29,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "prepack": "rm -Rf ./dist && tsc"
+    "clean": "rm -Rf ./dist",
+    "prepack": "run-s clean build"
   },
   "dependencies": {
     "@node-pigpio/highlevel": "^0.2.4"

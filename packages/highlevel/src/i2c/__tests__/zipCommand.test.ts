@@ -1,7 +1,7 @@
 import {
   buildZipCommand,
   I2cZipCommand,
-} from '@node-pigpio/highlevel/src/i2c/zipCommand'
+} from '../zipCommand'
 
 test('build read command', () => {
   const command = buildZipCommand({ type: 'Read', size: 128 }, false)

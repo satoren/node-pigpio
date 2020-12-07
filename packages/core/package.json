@@ -6,7 +6,8 @@
   "types": "dist/pigpio.d.ts",
   "scripts": {
     "build": "tsc",
-    "prepack": "rm -Rf ./dist && tsc"
+    "clean": "rm -Rf ./dist",
+    "prepack": "run-s clean build"
   },
   "publishConfig": {
     "access": "public"
