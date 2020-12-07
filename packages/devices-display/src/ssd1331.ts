@@ -271,6 +271,7 @@ export class Ssd1331 {
   requireFormat = 'RGB16_565'
 
   async close(): Promise<void> {
+    await this.display(false);
     await this.rs.close()
     await this.device.close()
   }
