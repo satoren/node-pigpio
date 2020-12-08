@@ -5,10 +5,10 @@
   "author": "satoren <satoreyo@hotmail.com>",
   "homepage": "https://github.com/satoren/node-pigpio#readme",
   "license": "MIT",
-  "main": "lib/examples-devices-display.js",
+  "main": "dist/ssd1306-with-node-canvas.js",
   "private": true,
   "directories": {
-    "lib": "lib",
+    "lib": "dist",
     "test": "__tests__"
   },
   "files": [

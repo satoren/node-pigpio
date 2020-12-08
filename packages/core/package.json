@@ -2,8 +2,8 @@
   "name": "@node-pigpio/core",
   "version": "0.2.3",
   "description": "pigpiod client for node.js",
-  "main": "dist/pigpio.js",
-  "types": "dist/pigpio.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "clean": "rm -Rf ./dist",
