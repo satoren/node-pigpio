@@ -7,3 +7,4 @@ coverage
 .eslintcache
 lerna-debug.log
 .vscode/
+tsconfig.tsbuildinfo

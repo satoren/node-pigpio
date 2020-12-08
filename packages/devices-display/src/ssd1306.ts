@@ -204,7 +204,7 @@ export class Ssd1306 {
   requireFormat = 'A1'
 
   async close(): Promise<void> {
-    await this.display(false);
+    await this.display(false)
     await this.device.close()
   }
 }

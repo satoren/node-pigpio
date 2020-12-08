@@ -1,7 +1,4 @@
-import {
-  buildZipCommand,
-  I2cZipCommand,
-} from '../zipCommand'
+import { buildZipCommand, I2cZipCommand } from '../zipCommand'
 
 test('build read command', () => {
   const command = buildZipCommand({ type: 'Read', size: 128 }, false)
