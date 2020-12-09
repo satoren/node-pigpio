@@ -303,14 +303,14 @@ export interface pigpio {
   // Custom
 
   /** User custom function 1 */
-  custom_1(arg1?: number, arg2?: number, argx?: Buffer): Promise<number>
+  custom_1(arg1?: number, arg2?: number, argx?: Uint8Array): Promise<number>
 
   /** User custom function 2 */
   custom_2(
     arg1?: number,
-    argx?: Buffer,
+    argx?: Uint8Array,
     retMax?: number
-  ): Promise<[number, Buffer]>
+  ): Promise<[number, Uint8Array]>
 
   // Events
 
@@ -383,13 +383,16 @@ export interface pigpio {
   ): Promise<number>
 
   /** SMBus read block data */
-  i2c_read_block_data(handle: number, reg: number): Promise<[number, Buffer]>
+  i2c_read_block_data(
+    handle: number,
+    reg: number
+  ): Promise<[number, Uint8Array]>
 
   // SMBus write block data*/
   i2c_write_block_data(
     handle: number,
     reg: number,
-    data: Buffer
+    data: Uint8Array
   ): Promise<number>
 
   /** SMBus read I2C block data */
@@ -397,19 +400,19 @@ export interface pigpio {
     handle: number,
     reg: number,
     count: number
-  ): Promise<[number, Buffer]>
+  ): Promise<[number, Uint8Array]>
   /** SMBus write I2C block data */
   i2c_write_i2c_block_data(
     handle: number,
     reg: number,
-    data: Buffer
+    data: Uint8Array
   ): Promise<number>
 
   /** Reads the raw I2C device */
-  i2c_read_device(handle: number, count: number): Promise<[number, Buffer]>
+  i2c_read_device(handle: number, count: number): Promise<[number, Uint8Array]>
 
   /** Writes the raw I2C device */
-  i2c_write_device(handle: number, data: Buffer): Promise<number>
+  i2c_write_device(handle: number, data: Uint8Array): Promise<number>
 
   /** SMBus process call */
   i2c_process_call(
@@ -422,11 +425,11 @@ export interface pigpio {
   i2c_block_process_call(
     handle: number,
     reg: number,
-    data: Buffer
-  ): Promise<[number, Buffer]>
+    data: Uint8Array
+  ): Promise<[number, Uint8Array]>
 
   /**  Performs multiple I2C transactions */
-  i2c_zip(handle: number, data: Buffer): Promise<[number, Buffer]>
+  i2c_zip(handle: number, data: Uint8Array): Promise<[number, Uint8Array]>
 
   /** I2C BIT BANG
 
@@ -435,15 +438,21 @@ export interface pigpio {
   /** Closes GPIO for bit banging I2C */
   bb_i2c_close(SDA: number): Promise<number>
   /** Performs multiple bit banged I2C transactions */
-  bb_i2c_zip(SDA: number, data: Buffer): Promise<[number, Buffer]>
+  bb_i2c_zip(SDA: number, data: Uint8Array): Promise<[number, Uint8Array]>
 
   // I2C/SPI SLAVE
 
   /** I2C/SPI as slave transfer */
-  bsc_xfer(bsc_control: number, data: Buffer): Promise<[number, number, Buffer]>
+  bsc_xfer(
+    bsc_control: number,
+    data: Uint8Array
+  ): Promise<[number, number, Uint8Array]>
 
   /** I2C as slave transfer */
-  bsc_i2c(i2c_address: number, data: Buffer): Promise<[number, number, Buffer]>
+  bsc_i2c(
+    i2c_address: number,
+    data: Uint8Array
+  ): Promise<[number, number, Uint8Array]>
 
   // SERIAL
   /** Opens a serial device
@@ -460,9 +469,9 @@ export interface pigpio {
   serial_write_byte(handle: number, byte_val: number): Promise<number>
 
   /** Reads bytes from a serial device */
-  serial_read(handle: number, count: number): Promise<[number, Buffer]>
+  serial_read(handle: number, count: number): Promise<[number, Uint8Array]>
   /** Writes bytes to a serial device */
-  serial_write(handle: number, data: Buffer): Promise<number>
+  serial_write(handle: number, data: Uint8Array): Promise<number>
 
   /** Returns number of bytes ready to be read */
   serial_data_available(handle: number): Promise<number>
@@ -483,7 +492,7 @@ export interface pigpio {
   bb_serial_invert(user_gpio: number, invert: 0 | 1): Promise<number>
 
   /** Read bit bang serial data from a GPIO */
-  bb_serial_read(user_gpio: number): Promise<[number, Buffer]>
+  bb_serial_read(user_gpio: number): Promise<[number, Uint8Array]>
 
   // SPI
 
@@ -498,13 +507,13 @@ export interface pigpio {
   spi_close(handle: number): Promise<number>
 
   /** Reads bytes from a SPI device */
-  spi_read(handle: number, count: number): Promise<[number, Buffer]>
+  spi_read(handle: number, count: number): Promise<[number, Uint8Array]>
 
   /** Writes bytes to a SPI device */
-  spi_write(handle: number, data: Buffer): Promise<number>
+  spi_write(handle: number, data: Uint8Array): Promise<number>
 
   /** Transfers bytes with a SPI device */
-  spi_xfer(handle: number, data: Buffer): Promise<[number, Buffer]>
+  spi_xfer(handle: number, data: Uint8Array): Promise<[number, Uint8Array]>
 
   // SPI BIT BANG
 
@@ -522,7 +531,7 @@ export interface pigpio {
   bb_spi_close(CS: number): Promise<number>
 
   /** Transfers bytes with bit banging SPI */
-  bb_spi_xfer(CS: number, data: Buffer): Promise<[number, Buffer]>
+  bb_spi_xfer(CS: number, data: Uint8Array): Promise<[number, Uint8Array]>
 
   // FILES
 
@@ -533,10 +542,10 @@ export interface pigpio {
   file_close(handle: number): Promise<number>
 
   /** Reads bytes from a file */
-  file_read(handle: number, count: number): Promise<[number, Buffer]>
+  file_read(handle: number, count: number): Promise<[number, Uint8Array]>
 
   /** Writes bytes to a file */
-  file_write(handle: number, data: Buffer): Promise<number>
+  file_write(handle: number, data: Uint8Array): Promise<number>
 
   /** Seeks to a position within a file */
   file_seek(
@@ -546,7 +555,7 @@ export interface pigpio {
   ): Promise<number>
 
   /** List files which match a pattern */
-  file_list(file_name: string): Promise<[number, Buffer]>
+  file_list(file_name: string): Promise<[number, Uint8Array]>
 
   // WAVES
 
@@ -561,7 +570,7 @@ export interface pigpio {
   wave_add_serial(
     user_gpio: number,
     baud: number,
-    data: Buffer,
+    data: Uint8Array,
     offset?: number,
     bb_bits?: number,
     bb_stop?: number
@@ -586,7 +595,7 @@ export interface pigpio {
   wave_send_using_mode(wave_id: number, mode: WaveModeType): Promise<number>
 
   /**  Transmits a chain of waveforms */
-  wave_chain(data: Buffer): Promise<number>
+  wave_chain(data: Uint8Array): Promise<number>
 
   /** Returns the current transmitting waveform */
   wave_tx_at(): Promise<number>
@@ -964,12 +973,12 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
   }
   const pigpioCommandExt = async (
     request: RequestParam
-  ): Promise<[number, Buffer]> => {
+  ): Promise<[number, Uint8Array]> => {
     const r = await reqSocket.request(request)
     if (r.res < 0 && exceptions) {
       throw Error(error_text(r.res))
     }
-    return [r.res, r.extension ?? Buffer.of()]
+    return [r.res, r.extension ?? Uint8Array.of()]
   }
   class PiImpl implements pigpio {
     async stop(): Promise<void> {
@@ -1047,8 +1056,9 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
       pulse_len: number,
       level: Level
     ): Promise<number> {
-      const extension = Buffer.alloc(4)
-      extension.writeUInt32LE(level)
+      const extension = new Uint8Array(4)
+      const dataview = new DataView(extension.buffer)
+      dataview.setUint32(0, level, true)
       return pigpioCommand(
         reqParam({
           command: 'TRIG',
@@ -1169,8 +1179,9 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
       PWMfreq: number,
       PWMduty: number
     ): Promise<number> {
-      const extension = Buffer.alloc(4)
-      extension.writeUInt32LE(PWMduty)
+      const extension = new Uint8Array(4)
+      const dataview = new DataView(extension.buffer)
+      dataview.setUint32(0, PWMduty, true)
       return pigpioCommand(
         reqParam({ command: 'HP', gpio, frequency: PWMfreq, extension })
       )
@@ -1185,8 +1196,9 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
       steady: number,
       active: number
     ): Promise<number> {
-      const extension = Buffer.alloc(4)
-      extension.writeUInt32LE(active)
+      const extension = new Uint8Array(4)
+      const dataview = new DataView(extension.buffer)
+      dataview.setUint32(0, active, true)
       return pigpioCommand(
         reqParam({ command: 'FN', gpio: user_gpio, steady, extension })
       )
@@ -1217,9 +1229,9 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
 
     custom_2(
       arg1 = 0,
-      argx = Buffer.of(),
+      argx = Uint8Array.of(),
       retMax = 0
-    ): Promise<[number, Buffer]> {
+    ): Promise<[number, Uint8Array]> {
       return pigpioCommandExt(
         reqParam({ command: 'CF2', arg1, retMax, extension: argx })
       )
@@ -1306,11 +1318,12 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
       if (res === 0) {
         return [0, []]
       }
-      const status = d.readInt32LE() as ScriptStatusType
+      const dataview = new DataView(d.buffer, d.byteOffset, d.byteLength)
+      const status = dataview.getInt32(0, true) as ScriptStatusType
       const params: number[] = []
       let offset = 4
       while (offset + 4 < d.length) {
-        params.push(d.readInt32LE(offset))
+        params.push(dataview.getInt32(offset, true))
         offset += 4
       }
       return [status, params]
@@ -1398,7 +1411,7 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
     i2c_read_block_data(
       handle: number,
       reg: number
-    ): Promise<[number, Buffer]> {
+    ): Promise<[number, Uint8Array]> {
       return pigpioCommandExt(
         reqParam({ command: 'I2CRK', handle, register: reg })
       )
@@ -1407,7 +1420,7 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
     i2c_write_block_data(
       handle: number,
       reg: number,
-      data: Buffer
+      data: Uint8Array
     ): Promise<number> {
       return pigpioCommand(
         reqParam({ command: 'I2CWK', handle, register: reg, extension: data })
@@ -1418,7 +1431,7 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
       handle: number,
       reg: number,
       count: number
-    ): Promise<[number, Buffer]> {
+    ): Promise<[number, Uint8Array]> {
       const extension = Buffer.alloc(4)
       extension.writeUInt32LE(count)
       return pigpioCommandExt(
@@ -1429,18 +1442,21 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
     i2c_write_i2c_block_data(
       handle: number,
       reg: number,
-      data: Buffer
+      data: Uint8Array
     ): Promise<number> {
       return pigpioCommand(
         reqParam({ command: 'I2CWI', handle, register: reg, extension: data })
       )
     }
 
-    i2c_read_device(handle: number, count: number): Promise<[number, Buffer]> {
+    i2c_read_device(
+      handle: number,
+      count: number
+    ): Promise<[number, Uint8Array]> {
       return pigpioCommandExt(reqParam({ command: 'I2CRD', handle, count }))
     }
 
-    i2c_write_device(handle: number, data: Buffer): Promise<number> {
+    i2c_write_device(handle: number, data: Uint8Array): Promise<number> {
       return pigpioCommand(
         reqParam({ command: 'I2CWD', handle, extension: data })
       )
@@ -1461,14 +1477,14 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
     i2c_block_process_call(
       handle: number,
       reg: number,
-      data: Buffer
-    ): Promise<[number, Buffer]> {
+      data: Uint8Array
+    ): Promise<[number, Uint8Array]> {
       return pigpioCommandExt(
         reqParam({ command: 'I2CPC', handle, register: reg, extension: data })
       )
     }
 
-    i2c_zip(handle: number, data: Buffer): Promise<[number, Buffer]> {
+    i2c_zip(handle: number, data: Uint8Array): Promise<[number, Uint8Array]> {
       return pigpioCommandExt(
         reqParam({ command: 'I2CZ', handle, extension: data })
       )
@@ -1486,7 +1502,7 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
       return pigpioCommand(reqParam({ command: 'BI2CC', sda: SDA }))
     }
 
-    bb_i2c_zip(SDA: number, data: Buffer): Promise<[number, Buffer]> {
+    bb_i2c_zip(SDA: number, data: Uint8Array): Promise<[number, Uint8Array]> {
       return pigpioCommandExt(
         reqParam({ command: 'BI2CZ', sda: SDA, extension: data })
       )
@@ -1494,8 +1510,8 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
 
     async bsc_xfer(
       bsc_control: number,
-      data: Buffer
-    ): Promise<[number, number, Buffer]> {
+      data: Uint8Array
+    ): Promise<[number, number, Uint8Array]> {
       const [res, d] = await pigpioCommandExt(
         reqParam({ command: 'BSCX', control: bsc_control, extension: data })
       )
@@ -1503,14 +1519,18 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
       if (res === 0) {
         return [0, 0, d]
       }
-      const status = d.readInt32LE()
+      const status = new DataView(
+        d.buffer,
+        d.byteOffset,
+        d.byteLength
+      ).getInt32(0, true)
       return [status, res - 4, d]
     }
 
     bsc_i2c(
       i2c_address: number,
-      data: Buffer
-    ): Promise<[number, number, Buffer]> {
+      data: Uint8Array
+    ): Promise<[number, number, Uint8Array]> {
       const control = i2c_address ? (i2c_address << 16) | 0x305 : 0
       return this.bsc_xfer(control, data)
     }
@@ -1540,7 +1560,7 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
       )
     }
 
-    serial_read(handle: number, count: number): Promise<[number, Buffer]> {
+    serial_read(handle: number, count: number): Promise<[number, Uint8Array]> {
       return pigpioCommandExt(reqParam({ command: 'SERR', handle, count }))
     }
 
@@ -1576,7 +1596,7 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
       )
     }
 
-    bb_serial_read(user_gpio: number): Promise<[number, Buffer]> {
+    bb_serial_read(user_gpio: number): Promise<[number, Uint8Array]> {
       return pigpioCommandExt(
         reqParam({ command: 'SLR', gpio: user_gpio, count: 10000 })
       )
@@ -1598,17 +1618,17 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
       return pigpioCommand(reqParam({ command: 'SPIC', handle }))
     }
 
-    spi_read(handle: number, count: number): Promise<[number, Buffer]> {
+    spi_read(handle: number, count: number): Promise<[number, Uint8Array]> {
       return pigpioCommandExt(reqParam({ command: 'SPIR', handle, count }))
     }
 
-    spi_write(handle: number, data: Buffer): Promise<number> {
+    spi_write(handle: number, data: Uint8Array): Promise<number> {
       return pigpioCommand(
         reqParam({ command: 'SPIW', handle, extension: data })
       )
     }
 
-    spi_xfer(handle: number, data: Buffer): Promise<[number, Buffer]> {
+    spi_xfer(handle: number, data: Uint8Array): Promise<[number, Uint8Array]> {
       return pigpioCommandExt(
         reqParam({ command: 'SPIX', handle, extension: data })
       )
@@ -1635,7 +1655,7 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
       return pigpioCommand(reqParam({ command: 'BSPIC', CS }))
     }
 
-    bb_spi_xfer(CS: number, data: Buffer): Promise<[number, Buffer]> {
+    bb_spi_xfer(CS: number, data: Uint8Array): Promise<[number, Uint8Array]> {
       return pigpioCommandExt(
         reqParam({ command: 'BSPIX', CS, extension: data })
       )
@@ -1655,11 +1675,11 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
       return pigpioCommand(reqParam({ command: 'FC', handle }))
     }
 
-    file_read(handle: number, count: number): Promise<[number, Buffer]> {
+    file_read(handle: number, count: number): Promise<[number, Uint8Array]> {
       return pigpioCommandExt(reqParam({ command: 'FR', handle, count }))
     }
 
-    file_write(handle: number, data: Buffer): Promise<number> {
+    file_write(handle: number, data: Uint8Array): Promise<number> {
       return pigpioCommand(reqParam({ command: 'FW', handle, extension: data }))
     }
 
@@ -1675,7 +1695,7 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
       )
     }
 
-    file_list(file_name: string): Promise<[number, Buffer]> {
+    file_list(file_name: string): Promise<[number, Uint8Array]> {
       return pigpioCommandExt(
         reqParam({
           command: 'FL',
@@ -1706,7 +1726,7 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
     wave_add_serial(
       user_gpio: number,
       baud: number,
-      data: Buffer,
+      data: Uint8Array,
       offset = 0,
       bb_bits = 8,
       bb_stop = 2
@@ -1746,7 +1766,7 @@ export async function pi(host?: string, port?: number): Promise<pigpio> {
       return pigpioCommand(reqParam({ command: 'WVTXM', wave_id, mode }))
     }
 
-    wave_chain(data: Buffer): Promise<number> {
+    wave_chain(data: Uint8Array): Promise<number> {
       return pigpioCommand(reqParam({ command: 'WVCHA', extension: data }))
     }
 

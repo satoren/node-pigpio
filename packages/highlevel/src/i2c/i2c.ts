@@ -1,6 +1,7 @@
 import { MonoTypedEventEmitter } from '@node-pigpio/util'
 import { I2c, I2cZipCommand } from '../types'
 import { buildZipCommand, ZipCommand } from './zipCommand'
+import { flat } from '../util'
 import * as pigpio from '@node-pigpio/core'
 
 class I2cImpl implements I2c {
@@ -16,7 +17,7 @@ class I2cImpl implements I2c {
     this.handle = await this.pi.i2c_open(bus, device, flags)
   }
 
-  async writeDevice(data: Buffer): Promise<void> {
+  async writeDevice(data: Uint8Array): Promise<void> {
     const { handle } = this
     if (handle == null) {
       throw new Error('Invalid Handle')
@@ -24,7 +25,7 @@ class I2cImpl implements I2c {
     await this.pi.i2c_write_device(handle, data)
   }
 
-  async readDevice(count: number): Promise<Buffer> {
+  async readDevice(count: number): Promise<Uint8Array> {
     const { handle } = this
     if (count === 0) {
       throw new Error('Invalid Argument')
@@ -40,20 +41,20 @@ class I2cImpl implements I2c {
     return data
   }
 
-  async zip(...commands: I2cZipCommand[]): Promise<Buffer[]> {
+  async zip(...commands: I2cZipCommand[]): Promise<Uint8Array[]> {
     const { handle } = this
     if (handle == null) {
       throw new Error('Invalid Handle')
     }
-    const data = Buffer.concat([
-      ...commands.map((c) => buildZipCommand(c, false)),
-      Buffer.of(ZipCommand.End),
-    ])
+    const data = Uint8Array.of(
+      ...flat(commands.map((c) => buildZipCommand(c, false))),
+      ZipCommand.End
+    )
 
     const [, retextension] = await this.pi.i2c_zip(handle, data)
 
     if (retextension) {
-      const ret: Buffer[] = []
+      const ret: Uint8Array[] = []
       let added = 0
       commands.forEach((r) => {
         if (r.type === 'Read') {

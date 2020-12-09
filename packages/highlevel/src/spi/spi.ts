@@ -15,7 +15,7 @@ class SpiImpl implements Spi {
     this.handle = await this.pi.spi_open(channel, baud, flags)
   }
 
-  async writeDevice(data: Buffer): Promise<void> {
+  async writeDevice(data: Uint8Array): Promise<void> {
     const { handle } = this
     if (handle == null) {
       throw new Error('Invalid Handle')
@@ -23,7 +23,7 @@ class SpiImpl implements Spi {
     await this.pi.spi_write(handle, data)
   }
 
-  async readDevice(count: number): Promise<Buffer> {
+  async readDevice(count: number): Promise<Uint8Array> {
     const { handle } = this
     if (count <= 0) {
       throw new Error('Invalid Argument')
@@ -39,7 +39,7 @@ class SpiImpl implements Spi {
     return data
   }
 
-  async xferDevice(data: Buffer): Promise<Buffer | undefined> {
+  async xferDevice(data: Uint8Array): Promise<Uint8Array | undefined> {
     const { handle } = this
     if (data.length === 0) {
       throw new Error('Invalid Argument')

@@ -39,16 +39,16 @@ test('write', async () => {
   mockedOpen.mockResolvedValueOnce(spihandle)
   const spi = await spiFactory.create(channel, baudrate, flags)
 
-  const writeData = Buffer.of(21)
+  const writeData = Uint8Array.of(21)
   await spi.writeDevice(writeData)
-  expect(mockedPigpio.spi_write).toBeCalledWith(99, Buffer.of(21))
+  expect(mockedPigpio.spi_write).toBeCalledWith(99, Uint8Array.of(21))
 })
 test('read', async () => {
   const spihandle = 99
   const mockedOpen = mockedPigpio.spi_open as jest.Mock
   mockedOpen.mockResolvedValueOnce(spihandle)
   const spi = await spiFactory.create(channel, baudrate, flags)
-  const responseData = Buffer.of(1, 2, 3, 4, 6, 7, 8, 12, 32, 56)
+  const responseData = Uint8Array.of(1, 2, 3, 4, 6, 7, 8, 12, 32, 56)
 
   const mockedRead = mockedPigpio.spi_read as jest.Mock
   mockedRead.mockResolvedValueOnce([responseData.length, responseData])
@@ -63,7 +63,7 @@ test('read with error', async () => {
   const spi = await spiFactory.create(channel, baudrate, flags)
 
   const mockedRead = mockedPigpio.spi_read as jest.Mock
-  mockedRead.mockResolvedValueOnce([0, Buffer.alloc(0)])
+  mockedRead.mockResolvedValueOnce([0, new Uint8Array(0)])
   await expect(spi.readDevice(33)).rejects.toThrow(
     'Cant readDevice: Unknown reason'
   )
@@ -76,15 +76,15 @@ test('xfer', async () => {
   mockedOpen.mockResolvedValueOnce(spihandle)
   const spi = await spiFactory.create(channel, baudrate, flags)
 
-  const writeData = Buffer.of(21)
-  const responseData = Buffer.of(77)
+  const writeData = Uint8Array.of(21)
+  const responseData = Uint8Array.of(77)
   const mockedXfer = mockedPigpio.spi_xfer as jest.Mock
   mockedXfer.mockResolvedValueOnce([responseData.length, responseData])
   const readData = await spi.xferDevice(writeData)
   expect(mockedXfer).toBeCalledWith(99, writeData)
   expect(readData).toMatchObject(responseData)
 
-  await expect(spi.xferDevice(Buffer.alloc(0))).rejects.toThrow(
+  await expect(spi.xferDevice(new Uint8Array(0))).rejects.toThrow(
     'Invalid Argument'
   )
 })
@@ -97,10 +97,10 @@ test('invalid handle', async () => {
 
   const spi = await spiFactory.create(channel, baudrate, flags)
   await spi.close()
-  await expect(spi.writeDevice(Buffer.from([23]))).rejects.toThrow(
+  await expect(spi.writeDevice(Uint8Array.from([23]))).rejects.toThrow(
     'Invalid Handle'
   )
-  await expect(spi.xferDevice(Buffer.from([23]))).rejects.toThrow(
+  await expect(spi.xferDevice(Uint8Array.from([23]))).rejects.toThrow(
     'Invalid Handle'
   )
   await expect(spi.readDevice(21)).rejects.toThrow('Invalid Handle')

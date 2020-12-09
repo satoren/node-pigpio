@@ -141,17 +141,17 @@ export interface Gpio extends TypedEventTarget<GpioEventArgsType> {
 }
 
 export type I2cZipCommand =
-  | { type: 'Write'; data: Buffer }
+  | { type: 'Write'; data: Uint8Array }
   | { type: 'Read'; size: number }
 
 /** I2C */
 export interface I2c {
   /** write data to I2C device */
-  writeDevice(data: Buffer): Promise<void>
+  writeDevice(data: Uint8Array): Promise<void>
   /** read data from I2C device */
-  readDevice(count: number): Promise<Buffer>
+  readDevice(count: number): Promise<Uint8Array>
   /** zipped command for I2C read/writes */
-  zip(...commands: I2cZipCommand[]): Promise<Buffer[]>
+  zip(...commands: I2cZipCommand[]): Promise<Uint8Array[]>
   close(): Promise<void>
   readonly closeEvent: MonoTypedEventTarget<void>
 }
@@ -170,10 +170,10 @@ export type BBI2COption = {
 /** Spi */
 export interface Spi {
   /** write data to Spi device */
-  writeDevice(data: Buffer): Promise<void>
+  writeDevice(data: Uint8Array): Promise<void>
   /** read data from Spi device */
-  readDevice(count: number): Promise<Buffer>
-  xferDevice(data: Buffer): Promise<Buffer | undefined>
+  readDevice(count: number): Promise<Uint8Array>
+  xferDevice(data: Uint8Array): Promise<Uint8Array | undefined>
   close(): Promise<void>
   readonly closeEvent: MonoTypedEventTarget<void>
 }

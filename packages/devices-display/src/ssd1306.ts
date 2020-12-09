@@ -10,8 +10,8 @@ import { dithering } from './ImageUtil/grayscale'
 import { isImageData, ImageData } from './type'
 
 interface DeviceInterface {
-  data(data: Buffer): Promise<void>
-  command(data: Buffer): Promise<void>
+  data(data: Uint8Array): Promise<void>
+  command(data: Uint8Array): Promise<void>
   close(): Promise<void>
 }
 
@@ -49,11 +49,11 @@ const settings: Record<
   '64x32': { multiplex: 0x1f, displayclockdiv: 0x80, compins: 0x12 },
 }
 
-const swapPage = (page: Buffer): Buffer => {
+const swapPage = (page: Uint8Array): Uint8Array => {
   const pageSize = page.length
   const srcWidth = (pageSize / 8) | 0
 
-  const buffer = Buffer.alloc(pageSize, 0)
+  const buffer = new Uint8Array(pageSize)
 
   for (let y = 0; y < 8; y += 1) {
     for (let x = 0; x < pageSize; x += 1) {
@@ -73,11 +73,11 @@ const swapPage = (page: Buffer): Buffer => {
 const createDeviceInterface = (i2c: I2c): Promise<DeviceInterface> => {
   return new Promise<DeviceInterface>((resolve) =>
     resolve({
-      data: async (data: Buffer): Promise<void> => {
+      data: async (data: Uint8Array): Promise<void> => {
         await i2c.writeDevice(data)
       },
-      command: async (data: Buffer): Promise<void> => {
-        await i2c.writeDevice(Buffer.from([0x0, ...data]))
+      command: async (data: Uint8Array): Promise<void> => {
+        await i2c.writeDevice(Uint8Array.from([0x0, ...data]))
       },
       close: async (): Promise<void> => {
         await i2c.close()
@@ -129,7 +129,7 @@ export class Ssd1306 {
     }
 
     await this.device.command(
-      Buffer.from([
+      Uint8Array.from([
         Commands.Disp,
         Commands.MuxRatio,
         setting.multiplex,
@@ -164,25 +164,25 @@ export class Ssd1306 {
   }
 
   async display(on: boolean): Promise<void> {
-    await this.device.command(Buffer.from([Commands.Disp | (on ? 1 : 0)]))
+    await this.device.command(Uint8Array.from([Commands.Disp | (on ? 1 : 0)]))
   }
 
   async contrast(contrast: number): Promise<void> {
-    await this.device.command(Buffer.from([Commands.Contrast, contrast]))
+    await this.device.command(Uint8Array.from([Commands.Contrast, contrast]))
   }
 
   async invert(invert: boolean): Promise<void> {
     await this.device.command(
-      Buffer.from([Commands.NormInv | (invert ? 1 : 0)])
+      Uint8Array.from([Commands.NormInv | (invert ? 1 : 0)])
     )
   }
 
-  async draw(data: Buffer | ImageData): Promise<void> {
+  async draw(data: Uint8Array | ImageData): Promise<void> {
     if (isImageData(data)) {
       if (data.format !== 'A1') {
-        data = Buffer.from(dithering(data).data)
+        data = Uint8Array.from(dithering(data).data)
       } else {
-        data = Buffer.from(data.data)
+        data = Uint8Array.from(data.data)
       }
     }
 
@@ -191,14 +191,14 @@ export class Ssd1306 {
       throw Error('Invalid buffer: Require A1 format')
     }
 
-    const buffer = Buffer.alloc(bufferSize, 0)
+    const buffer = new Uint8Array(bufferSize)
     const pageSize = this.width
     for (let p = 0; p < data.length; p += pageSize) {
       const srcPage = data.slice(p, p + pageSize)
       const page = swapPage(srcPage)
-      page.copy(buffer, p)
+      buffer.set(page, p)
     }
-    await this.device.data(Buffer.from([0b01000000, ...buffer]))
+    await this.device.data(Uint8Array.from([0b01000000, ...buffer]))
   }
 
   requireFormat = 'A1'

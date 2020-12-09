@@ -31,8 +31,8 @@ test('write', async () => {
   const spiFactory = new BBSpiFactory(mockedPigpio)
   const spi = await spiFactory.create(cs, miso, mosi, sclk, baudrate, flags)
   const mockedXfer = mockedPigpio.bb_spi_xfer as jest.Mock
-  mockedXfer.mockResolvedValueOnce([0, Buffer.alloc(0)])
-  const writeData = Buffer.of(21)
+  mockedXfer.mockResolvedValueOnce([0, new Uint8Array(0)])
+  const writeData = Uint8Array.of(21)
   await spi.writeDevice(writeData)
   expect(mockedPigpio.bb_spi_xfer).toBeCalledWith(3, writeData)
 })
@@ -42,10 +42,10 @@ test('read', async () => {
   const spiFactory = new BBSpiFactory(mockedPigpio)
   const spi = await spiFactory.create(cs, miso, mosi, sclk, baudrate, flags)
   const mockedXfer = mockedPigpio.bb_spi_xfer as jest.Mock
-  const responseData = Buffer.of(1, 2, 3, 4, 6, 7, 8, 12, 32, 56)
+  const responseData = Uint8Array.of(1, 2, 3, 4, 6, 7, 8, 12, 32, 56)
   mockedXfer.mockResolvedValueOnce([responseData.length, responseData])
   const readData = await spi.readDevice(responseData.length)
-  expect(mockedXfer).toBeCalledWith(3, Buffer.alloc(10))
+  expect(mockedXfer).toBeCalledWith(3, new Uint8Array(10))
   expect(readData).toMatchObject(responseData)
   await expect(spi.readDevice(0)).rejects.toThrow('Invalid Argument')
 })
@@ -55,7 +55,7 @@ test('read 0', async () => {
   const spiFactory = new BBSpiFactory(mockedPigpio)
   const spi = await spiFactory.create(cs, miso, mosi, sclk, baudrate, flags)
   const mockedXfer = mockedPigpio.bb_spi_xfer as jest.Mock
-  const responseData = Buffer.of()
+  const responseData = Uint8Array.of()
   mockedXfer.mockResolvedValueOnce([responseData.length, undefined])
   await expect(spi.readDevice(32)).rejects.toThrow(
     'Cant readDevice: Unknown reason'

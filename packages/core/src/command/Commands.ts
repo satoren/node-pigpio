@@ -60,15 +60,15 @@ type ExtensionRequestCommand<T extends RequestTypeNames> = {
 type RequestCommand<T extends RequestTypeNames> = HasExtensionRequest<
   T,
   ExtensionRequestCommand<T> & {
-    extension: Buffer
+    extension: Uint8Array
   },
   ExtensionRequestCommand<T>
 >
 
 const isExtensionRequest = <T extends RequestTypeNames>(
   param: RequestCommand<T>
-): param is RequestCommand<T> & { extension: Buffer } =>
-  (param as { extension: Buffer }).extension?.length > 0
+): param is RequestCommand<T> & { extension: Uint8Array } =>
+  (param as { extension: Uint8Array }).extension?.length > 0
 
 const pickParam = <T>(param: T, name: string): number => {
   const v = param[name as keyof T]

@@ -29,11 +29,12 @@ enum NotifyFlag {
   ALIVE = 1 << 6,
   WDOG = 1 << 5,
 }
-const fromBuffer = (data: Buffer): Notify => {
-  const seqno = data.readUInt16LE(0)
-  const flags = data.readUInt16LE(2)
-  const tick = data.readUInt32LE(4)
-  const level = data.readUInt32LE(8)
+const fromBuffer = (data: Uint8Array): Notify => {
+  const dataview = new DataView(data.buffer, data.byteOffset, data.byteLength)
+  const seqno = dataview.getInt16(0, true)
+  const flags = dataview.getUint16(2, true)
+  const tick = dataview.getUint32(4, true)
+  const level = dataview.getUint32(8, true)
   return {
     seqno,
     flags,

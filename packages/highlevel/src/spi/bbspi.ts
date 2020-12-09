@@ -23,19 +23,19 @@ class SpiImpl implements Spi {
     await this.pi.bb_spi_open(CS, miso, mosi, sclk, baudRate, flags)
   }
 
-  async writeDevice(data: Buffer): Promise<void> {
+  async writeDevice(data: Uint8Array): Promise<void> {
     await this.xferDevice(data)
   }
 
-  async readDevice(count: number): Promise<Buffer> {
-    const data = await this.xferDevice(Buffer.alloc(count))
+  async readDevice(count: number): Promise<Uint8Array> {
+    const data = await this.xferDevice(new Uint8Array(count))
     if (!data) {
       throw new Error('Cant readDevice: Unknown reason')
     }
     return data
   }
 
-  async xferDevice(data: Buffer): Promise<Buffer | undefined> {
+  async xferDevice(data: Uint8Array): Promise<Uint8Array | undefined> {
     const { CS } = this
     if (data.length === 0) {
       throw new Error('Invalid Argument')

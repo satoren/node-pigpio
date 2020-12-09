@@ -6,10 +6,10 @@ test('build read command', () => {
 })
 test('build write command', () => {
   const command = buildZipCommand(
-    { type: 'Write', data: Buffer.alloc(64) },
+    { type: 'Write', data: new Uint8Array(64) },
     false
   )
-  expect([...command]).toMatchObject([7, 64, ...Buffer.alloc(64)])
+  expect([...command]).toMatchObject([7, 64, ...new Uint8Array(64)])
 })
 
 test('build read command larger then 255', () => {
@@ -19,10 +19,10 @@ test('build read command larger then 255', () => {
 
 test('build write command larger then 255', () => {
   const command = buildZipCommand(
-    { type: 'Write', data: Buffer.alloc(500) },
+    { type: 'Write', data: new Uint8Array(500) },
     false
   )
-  expect([...command]).toMatchObject([1, 7, 244, 1, ...Buffer.alloc(500)])
+  expect([...command]).toMatchObject([1, 7, 244, 1, ...new Uint8Array(500)])
 })
 
 test('build 65535 bytes read command ', () => {

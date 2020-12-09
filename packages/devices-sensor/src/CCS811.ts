@@ -67,7 +67,7 @@ export const CCS811 = async (option?: Option): Promise<CCS811> => {
 
   const readByte = async (cmd: RegisterAddress): Promise<number> => {
     const [[data]] = await i2c.zip(
-      { type: 'Write', data: Buffer.from([cmd]) },
+      { type: 'Write', data: Uint8Array.of(cmd) },
       { type: 'Read', size: 1 }
     )
     return data
@@ -75,9 +75,9 @@ export const CCS811 = async (option?: Option): Promise<CCS811> => {
   const readData = async (
     cmd: RegisterAddress,
     size: number
-  ): Promise<Buffer> => {
+  ): Promise<Uint8Array> => {
     const [data] = await i2c.zip(
-      { type: 'Write', data: Buffer.from([cmd]) },
+      { type: 'Write', data: Uint8Array.of(cmd) },
       { type: 'Read', size: size }
     )
     return data
@@ -181,7 +181,7 @@ export const CCS811 = async (option?: Option): Promise<CCS811> => {
       let newMode = await readByte(RegisterAddress.MEAS_MODE)
       newMode &= ~(0b00000111 << 4)
       newMode |= modeValue() << 4
-      await i2c.writeDevice(Buffer.from([RegisterAddress.MEAS_MODE, newMode]))
+      await i2c.writeDevice(Uint8Array.of(RegisterAddress.MEAS_MODE, newMode))
 
       if (task.running()) {
         await this.start()
@@ -190,7 +190,7 @@ export const CCS811 = async (option?: Option): Promise<CCS811> => {
 
     softReset(): Promise<void> {
       return i2c.writeDevice(
-        Buffer.from([RegisterAddress.SW_RESET, 0x11, 0xe5, 0x72, 0x8a])
+        Uint8Array.of(RegisterAddress.SW_RESET, 0x11, 0xe5, 0x72, 0x8a)
       )
     }
 
@@ -205,7 +205,7 @@ export const CCS811 = async (option?: Option): Promise<CCS811> => {
       const tMSB = (t >> 8) & 0xff
       const tLSB = t & 0xff
       await i2c.writeDevice(
-        Buffer.from([RegisterAddress.ENV_DATA, hMSB, hLSB, tMSB, tLSB])
+        Uint8Array.of(RegisterAddress.ENV_DATA, hMSB, hLSB, tMSB, tLSB)
       )
     }
 
@@ -243,7 +243,7 @@ export const CCS811 = async (option?: Option): Promise<CCS811> => {
         throw Error('App not valid.')
       }
 
-      await i2c.writeDevice(Buffer.from([RegisterAddress.APP_START]))
+      await i2c.writeDevice(Uint8Array.of(RegisterAddress.APP_START))
       await this.checkForError()
       await this.setDriveMode('EverySecond')
 

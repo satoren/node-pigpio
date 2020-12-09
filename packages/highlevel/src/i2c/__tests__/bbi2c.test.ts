@@ -19,59 +19,57 @@ beforeEach(async () => {
 test('open and close', async () => {
   const i2c = await i2cFactory.create(device, sda, scl, baudrate)
 
-  const baud = Buffer.alloc(4)
-  baud.writeUInt32LE(baudrate)
   expect(mockedPigpio.bb_i2c_open).toBeCalledWith(sda, scl, baudrate)
   await i2c.close()
   expect(mockedPigpio.bb_i2c_close).toBeCalledWith(sda)
 })
 test('write', async () => {
-  const responseData = Buffer.of(1, 2, 3, 4, 6, 7, 8, 12, 32, 56)
+  const responseData = Uint8Array.of(1, 2, 3, 4, 6, 7, 8, 12, 32, 56)
   const i2c = await i2cFactory.create(device, sda, scl, baudrate)
-  const writeData = Buffer.of(21)
+  const writeData = Uint8Array.of(21)
   const mockedZip = mockedPigpio.bb_i2c_zip as jest.Mock
   mockedZip.mockResolvedValueOnce([responseData.length, responseData])
   await i2c.writeDevice(writeData)
   expect(mockedPigpio.bb_i2c_zip).toBeCalledWith(
     sda,
-    Buffer.of(4, device, 2, 7, 1, 21, 3, 0)
+    Uint8Array.of(4, device, 2, 7, 1, 21, 3, 0)
   )
 })
 
 test('write over 255', async () => {
-  const responseData = Buffer.of(1, 2, 3, 4, 6, 7, 8, 12, 32, 56)
+  const responseData = Uint8Array.of(1, 2, 3, 4, 6, 7, 8, 12, 32, 56)
   const i2c = await i2cFactory.create(device, sda, scl, baudrate)
-  const writeData = Buffer.alloc(1023)
+  const writeData = new Uint8Array(1023)
   const mockedZip = mockedPigpio.bb_i2c_zip as jest.Mock
   mockedZip.mockResolvedValueOnce([responseData.length, responseData])
   await i2c.writeDevice(writeData)
   expect(mockedPigpio.bb_i2c_zip).toBeCalledWith(
     sda,
-    Buffer.of(4, device, 2, 1, 7, 255, 3, ...writeData, 3, 0)
+    Uint8Array.of(4, device, 2, 1, 7, 255, 3, ...writeData, 3, 0)
   )
 })
 
 test('read', async () => {
   const i2c = await i2cFactory.create(device, sda, scl, baudrate)
-  const responseData = Buffer.of(1, 2, 3, 4, 6, 7, 8, 12, 32, 56)
+  const responseData = Uint8Array.of(1, 2, 3, 4, 6, 7, 8, 12, 32, 56)
   const mockedZip = mockedPigpio.bb_i2c_zip as jest.Mock
   mockedZip.mockResolvedValueOnce([responseData.length, responseData])
   const readData = await i2c.readDevice(responseData.length)
   expect(mockedPigpio.bb_i2c_zip).toBeCalledWith(
     sda,
-    Buffer.of(4, device, 2, 6, responseData.length, 3, 0)
+    Uint8Array.of(4, device, 2, 6, responseData.length, 3, 0)
   )
   expect(readData).toMatchObject(responseData)
 })
 
 test('read 2 sequence by zip ', async () => {
   const i2c = await i2cFactory.create(device, sda, scl, baudrate)
-  const responseData = Buffer.of(1, 2, 3, 4, 6, 7, 8, 12, 32, 56)
-  const responseData2 = Buffer.of(77, 66)
+  const responseData = Uint8Array.of(1, 2, 3, 4, 6, 7, 8, 12, 32, 56)
+  const responseData2 = Uint8Array.of(77, 66)
   const mockedZip = mockedPigpio.bb_i2c_zip as jest.Mock
   mockedZip.mockResolvedValueOnce([
     responseData.length + responseData2.length,
-    Buffer.concat([responseData, responseData2]),
+    Uint8Array.of(...responseData, ...responseData2),
   ])
   const [readData, readData2] = await i2c.zip(
     { type: 'Read', size: responseData.length },
@@ -79,7 +77,7 @@ test('read 2 sequence by zip ', async () => {
   )
   expect(mockedPigpio.bb_i2c_zip).toBeCalledWith(
     sda,
-    Buffer.of(
+    Uint8Array.of(
       4,
       device,
       2,

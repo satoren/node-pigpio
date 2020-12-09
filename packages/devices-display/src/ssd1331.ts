@@ -41,8 +41,8 @@ enum Commands {
 }
 
 interface DeviceInterface {
-  data(data: Buffer): Promise<void>
-  command(data: Buffer): Promise<void>
+  data(data: Uint8Array): Promise<void>
+  command(data: Uint8Array): Promise<void>
   close(): Promise<void>
 }
 interface Point {
@@ -61,11 +61,11 @@ const createDeviceInterface = async (
 ): Promise<DeviceInterface> => {
   await dc.setMode('OUTPUT')
   return {
-    data: async (data: Buffer): Promise<void> => {
+    data: async (data: Uint8Array): Promise<void> => {
       await dc.write(1)
       await spi.writeDevice(data)
     },
-    command: async (data: Buffer): Promise<void> => {
+    command: async (data: Uint8Array): Promise<void> => {
       await dc.write(0)
       await spi.writeDevice(data)
     },
@@ -132,7 +132,7 @@ export class Ssd1331 {
 
     await this.rs.write(1)
     await this.device.command(
-      Buffer.from([
+      Uint8Array.from([
         Commands.Disp,
         Commands.SegRemap,
         0b01110010,
@@ -178,16 +178,16 @@ export class Ssd1331 {
       ])
     )
 
-    await this.device.command(Buffer.from([0xaf]))
+    await this.device.command(Uint8Array.from([0xaf]))
   }
 
   async display(on: boolean): Promise<void> {
-    await this.device.command(Buffer.from([Commands.Disp | (on ? 1 : 0)]))
+    await this.device.command(Uint8Array.from([Commands.Disp | (on ? 1 : 0)]))
   }
 
   async contrast(contrast: number): Promise<void> {
     await this.device.command(
-      Buffer.from([
+      Uint8Array.from([
         Commands.ContrastA,
         contrast,
         Commands.ContrastB,
@@ -198,12 +198,12 @@ export class Ssd1331 {
     )
   }
 
-  async draw(data: Buffer | ImageData): Promise<void> {
+  async draw(data: Uint8Array | ImageData): Promise<void> {
     if (isImageData(data)) {
       if (data.format !== 'RGB16_565') {
-        data = Buffer.from(toRGB565(data).data)
+        data = Uint8Array.from(toRGB565(data).data)
       } else {
-        data = Buffer.from(data.data)
+        data = Uint8Array.from(data.data)
       }
     }
     const bufferSize = this.width * this.height * 2
@@ -211,7 +211,7 @@ export class Ssd1331 {
       throw Error('Invalid buffer')
     }
     await this.device.command(
-      Buffer.from([
+      Uint8Array.from([
         Commands.SetColumnAddress,
         0,
         this.width - 1,
@@ -228,7 +228,7 @@ export class Ssd1331 {
 
   async drawLine(start: Point, end: Point, color: Color): Promise<void> {
     await this.device.command(
-      Buffer.from([
+      Uint8Array.from([
         Commands.DrawLine,
         start.x,
         start.y,
@@ -252,7 +252,7 @@ export class Ssd1331 {
       : []
 
     await this.device.command(
-      Buffer.from([
+      Uint8Array.from([
         Commands.FillEnable,
         fill ? 1 : 0,
         Commands.DrawRectangle,

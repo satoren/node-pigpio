@@ -1,6 +1,7 @@
 import { MonoTypedEventEmitter } from '@node-pigpio/util'
 import { I2c, I2cZipCommand } from '../types'
 import { buildZipCommand, ZipCommand } from './zipCommand'
+import { flat } from '../util'
 import * as pigpio from '@node-pigpio/core'
 
 class BBI2cImpl implements I2c {
@@ -14,23 +15,26 @@ class BBI2cImpl implements I2c {
     this.pi = pi
   }
 
-  async writeDevice(data: Buffer): Promise<void> {
+  async writeDevice(data: Uint8Array): Promise<void> {
     await this.zip({ type: 'Write', data })
   }
 
-  async readDevice(count: number): Promise<Buffer> {
-    return Buffer.concat(await this.zip({ type: 'Read', size: count }))
+  async readDevice(count: number): Promise<Uint8Array> {
+    const read = await this.zip({ type: 'Read', size: count })
+    return read[0]
   }
 
-  async zip(...commands: I2cZipCommand[]): Promise<Buffer[]> {
+  async zip(...commands: I2cZipCommand[]): Promise<Uint8Array[]> {
     const { sda, device } = this
-    const data = Buffer.concat([
-      Buffer.of(ZipCommand.Address, device),
-      ...commands.map((c) => buildZipCommand(c, true)),
-      Buffer.of(ZipCommand.Stop, ZipCommand.End),
-    ])
+    const data = Uint8Array.of(
+      ZipCommand.Address,
+      device,
+      ...flat(commands.map((c) => buildZipCommand(c, true))),
+      ZipCommand.Stop,
+      ZipCommand.End
+    )
     const [, res] = await this.pi.bb_i2c_zip(sda, data)
-    const ret: Buffer[] = []
+    const ret: Uint8Array[] = []
     let added = 0
     commands.forEach((r) => {
       if (r.type === 'Read') {

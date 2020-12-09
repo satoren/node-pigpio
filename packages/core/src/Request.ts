@@ -4,7 +4,7 @@ export interface RequestParam {
   cmd: number
   p1: number
   p2: number
-  extension?: ArrayBuffer
+  extension?: Uint8Array
   responseExtension: boolean
 }
 
@@ -13,17 +13,18 @@ export interface ResponseParam {
   p1: number
   p2: number
   res: number
-  extension?: Buffer
+  extension?: Uint8Array
 }
 const responseSize = 16
-const fromBuffer = (data: Buffer): ResponseParam | undefined => {
+const fromBuffer = (data: Uint8Array): ResponseParam | undefined => {
   if (data.length < responseSize) {
     return undefined
   }
-  const cmd = data.readUInt32LE(0)
-  const p1 = data.readUInt32LE(4)
-  const p2 = data.readUInt32LE(8)
-  const res = data.readInt32LE(12)
+  const dataview = new DataView(data.buffer, data.byteOffset, data.byteLength)
+  const cmd = dataview.getUint32(0, true)
+  const p1 = dataview.getUint32(4, true)
+  const p2 = dataview.getUint32(8, true)
+  const res = dataview.getInt32(12, true)
   const extensionData = data.slice(16)
   const extension = extensionData.length > 0 ? extensionData : undefined
   return {
@@ -35,14 +36,15 @@ const fromBuffer = (data: Buffer): ResponseParam | undefined => {
   }
 }
 
-const toBuffer = (req: RequestParam): Buffer => {
+const toBuffer = (req: RequestParam): Uint8Array => {
   const extensionSize = req.extension?.byteLength ?? 0
   const size = 4 * 4 + extensionSize
-  const buffer = Buffer.alloc(size)
-  buffer.writeUInt32LE(req.cmd, 0)
-  buffer.writeUInt32LE(req.p1, 4)
-  buffer.writeUInt32LE(req.p2, 8)
-  buffer.writeUInt32LE(extensionSize, 12)
+  const buffer = new Uint8Array(size)
+  const dataview = new DataView(buffer.buffer)
+  dataview.setUint32(0, req.cmd, true)
+  dataview.setUint32(4, req.p1, true)
+  dataview.setUint32(8, req.p2, true)
+  dataview.setUint32(12, extensionSize, true)
   if (req.extension) {
     buffer.set(new Uint8Array(req.extension), 16)
   }

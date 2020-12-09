@@ -247,7 +247,7 @@ test('close event', async () => {
   mockSocket.write.mockClear()
   await target.close()
   expect(mockSocket.write).toBeCalledWith(
-    Buffer.from([
+    Uint8Array.from([
       RequestCommand.NC.cmdNo,
       0,
       0,

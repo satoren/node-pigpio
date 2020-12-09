@@ -17,11 +17,11 @@ test('event', async () => {
     cmd: 2,
     p1: 3,
     p2: 4,
-    extension: Buffer.of(5, 6),
+    extension: Uint8Array.of(5, 6),
     responseExtension: false,
   })
   expect(mockSocket.write).toBeCalledWith(
-    Buffer.from([2, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0, 2, 0, 0, 0, 5, 6])
+    Uint8Array.of(2, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0, 2, 0, 0, 0, 5, 6)
   )
 })
 

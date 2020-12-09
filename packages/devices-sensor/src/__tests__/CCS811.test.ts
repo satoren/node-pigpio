@@ -23,14 +23,14 @@ test('using', async () => {
     if (reg.type === 'Write') {
       switch (reg.data[0]) {
         case 0x20:
-          return [Buffer.from([0x81])]
+          return [Uint8Array.from([0x81])]
         case 0x0:
-          return [Buffer.from([(1 << 4) | (1 << 3)])]
+          return [Uint8Array.from([(1 << 4) | (1 << 3)])]
         case 0x02:
-          return [Buffer.of(2, 1, 2, 1, (1 << 4) | (1 << 3), 0, 0, 0)]
+          return [Uint8Array.of(2, 1, 2, 1, (1 << 4) | (1 << 3), 0, 0, 0)]
       }
     }
-    return [Buffer.from([0x81])]
+    return [Uint8Array.from([0x81])]
   })
   const ccs811 = await CCS811({ i2c: mockI2c })
 

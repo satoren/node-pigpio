@@ -132,7 +132,7 @@ export const BME280 = async (option?: Option): Promise<BME280> => {
 
   const readByte = async (cmd: RegisterAddress): Promise<number> => {
     const [[data]] = await i2c.zip(
-      { type: 'Write', data: Buffer.from([cmd]) },
+      { type: 'Write', data: Uint8Array.of(cmd) },
       { type: 'Read', size: 1 }
     )
     return data
@@ -141,13 +141,16 @@ export const BME280 = async (option?: Option): Promise<BME280> => {
     cmd: RegisterAddress,
     byte: number
   ): Promise<void> => {
-    return i2c.writeDevice(Buffer.from([cmd, byte]))
+    return i2c.writeDevice(Uint8Array.of(cmd, byte))
+  }
+  const dataView = (d: Uint8Array): DataView => {
+    return new DataView(d.buffer, d.byteOffset, d.byteLength)
   }
   const readUInt16LE = async (cmd: RegisterAddress): Promise<number> => {
-    return (await readData(cmd, 2)).readUInt16LE()
+    return dataView(await readData(cmd, 2)).getUint16(0, true)
   }
   const readUInt16BE = async (cmd: RegisterAddress): Promise<number> => {
-    return (await readData(cmd, 2)).readUInt16BE()
+    return dataView(await readData(cmd, 2)).getUint16(0, false)
   }
   const readUInt24BE = async (cmd: RegisterAddress): Promise<number> => {
     const v = await readData(cmd, 3)
@@ -155,14 +158,14 @@ export const BME280 = async (option?: Option): Promise<BME280> => {
   }
 
   const readInt16LE = async (cmd: RegisterAddress): Promise<number> => {
-    return (await readData(cmd, 2)).readInt16LE()
+    return dataView(await readData(cmd, 2)).getInt16(0, true)
   }
   const readData = async (
     cmd: RegisterAddress,
     size: number
-  ): Promise<Buffer> => {
+  ): Promise<Uint8Array> => {
     const [data] = await i2c.zip(
-      { type: 'Write', data: Buffer.from([cmd]) },
+      { type: 'Write', data: Uint8Array.of(cmd) },
       { type: 'Read', size: size }
     )
     return data

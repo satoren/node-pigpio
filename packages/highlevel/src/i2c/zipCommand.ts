@@ -19,7 +19,7 @@ export enum ZipCommand {
 export const buildZipCommand = (
   command: I2cZipCommand,
   bb: boolean
-): Buffer => {
+): number[] => {
   const P = (v: number): number[] => {
     if (v > 65535) {
       // TODO split data?
@@ -42,7 +42,7 @@ export const buildZipCommand = (
       }
       data.push(ZipCommand.Read)
       data.push(...p)
-      return Buffer.of(...data)
+      return data
     }
     case 'Write': {
       const data: number[] = []
@@ -55,7 +55,7 @@ export const buildZipCommand = (
       }
       data.push(ZipCommand.Write)
       data.push(...p)
-      return Buffer.concat([Buffer.of(...data), command.data])
+      return [...data, ...command.data]
     }
     default:
       throw Error('Unknown commmand')
