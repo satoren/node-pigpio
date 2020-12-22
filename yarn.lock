@@ -2240,10 +2240,10 @@ canvas@^2.6.1:
     node-pre-gyp "^0.11.0"
     simple-get "^3.0.3"
 
-canvaskit-wasm@^0.20.0:
-  version "0.20.0"
-  resolved "https://registry.yarnpkg.com/canvaskit-wasm/-/canvaskit-wasm-0.20.0.tgz#a1bc5cd9a0851606f6a81bf154a731e697c09b37"
-  integrity sha512-ReZf/s0xS0SDs/82hqr4Gl8G9MMpUPc8aEkMUUKOfucsJJQeDm/a/gG+y1gvgEVymo3guREQqfoNSRa7+qrUnA==
+canvaskit-wasm@^0.22.0:
+  version "0.22.0"
+  resolved "https://registry.yarnpkg.com/canvaskit-wasm/-/canvaskit-wasm-0.22.0.tgz#b0a3259d42470b221646197c8b9d9a95452cf52b"
+  integrity sha512-cG7idicPkKfmSMc9LUh3ZGoz1ox99qREKk7Oa3HOXHGiAm6czNKl324J5CXtDn8VceIh31WoQ3jjfqkeQrHT9A==
 
 capture-exit@^2.0.0:
   version "2.0.0"
